@@ -104,7 +104,8 @@ public class MyGame extends GameScript {
                 "You're really cute, Sakura!",
                 "Can you show me more features?",
                 "Let's see some window tricks!",
-                "Show me the Sub-Window Demo!");
+                "Show me the Sub-Window Demo!",
+                "Visit the official website!");
 
         if (choice1 == 0) {
             flatteryPath();
@@ -112,8 +113,13 @@ public class MyGame extends GameScript {
             featureShowcasePath();
         } else if (choice1 == 2) {
             windowTricksPath();
-        } else {
+        } else if (choice1 == 3) {
             subWindowDemoPath();
+        } else {
+            show(SAKURA, "demo_girl_happy");
+            say(SAKURA, "Sure! Opening the website for you~");
+            website("https://google.com"); // Placeholder or engine site
+            say(SAKURA, "There you go!");
         }
 
         // ========================================

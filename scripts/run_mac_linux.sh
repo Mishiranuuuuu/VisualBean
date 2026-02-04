@@ -1,5 +1,7 @@
-@echo off
-if not exist bin mkdir bin
+#!/bin/bash
+# Move to project root
+cd "$(dirname "$0")/.."
+
+mkdir -p bin
 javac -d bin -sourcepath src src/com/vnengine/Main.java
-if %errorlevel% neq 0 exit /b %errorlevel%
 java -cp bin com.vnengine.Main

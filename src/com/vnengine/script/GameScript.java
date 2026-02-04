@@ -267,6 +267,14 @@ public abstract class GameScript implements Runnable {
         engine.subWindowSay(id, name, text);
     }
 
+    protected void website(String url) {
+        engine.openWebsite(url);
+    }
+
+    protected void openWeb(String url) {
+        engine.openWebsite(url);
+    }
+
     @Override
     public abstract void run();
 }

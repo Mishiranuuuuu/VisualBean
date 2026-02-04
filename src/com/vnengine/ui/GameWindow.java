@@ -91,7 +91,7 @@ public class GameWindow extends JFrame {
             gd.setFullScreenWindow(null); // Exit full screen exclusive
 
             setUndecorated(false);
-            setResizable(true);
+            setResizable(false);
             setExtendedState(JFrame.NORMAL);
 
             panel.setPreferredSize(new Dimension(1280, 720));
@@ -124,7 +124,7 @@ public class GameWindow extends JFrame {
 
         add(panel);
 
-        setResizable(true); // Set resizable BEFORE pack to ensure correct border calculation
+        setResizable(false); // Set resizable BEFORE pack to ensure correct border calculation
         pack(); // Size window to fit panel including decorations
         setLocationRelativeTo(null);
 

@@ -808,6 +808,25 @@ public class GameEngine {
         windowResizeAnimation.start();
     }
 
+    // --- Website Opener ---
+    public void openWebsite(String urlString) {
+        if (isSkipping())
+            return;
+
+        try {
+            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+            if (desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+                java.net.URI uri = new java.net.URI(urlString);
+                desktop.browse(uri);
+            } else {
+                System.err.println("Web browsing not supported on this platform.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error opening website: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public void scaleCharacter(String name, double targetScale, int durationMs, com.vnengine.util.Easing easing) {
         if (!visibleCharacters.containsKey(name))
             return;
