@@ -26,5 +26,8 @@ Thumbs.db
 # User Scripts & Docs to Ignore
 update_repo.bat
 setup_git.bat
+fix_sync.bat
+untrack_files.bat
+update_repo.bat
 fix_window.py
 HowToCreateYourGame.md
