@@ -43,7 +43,7 @@ public class MyStory extends GameScript {
 
 All methods below are available inside your `GameScript` class.
 
-### 🎭 Narrative Control
+### Narrative Control
 *   **`say(name, text)`**: Character speaks.
 *   **`narrator(text)`**: Narration text (no name).
 *   **`menu(option1, option2, ...)`**: Displays a choice menu. Returns the index selected (0, 1, 2...).
@@ -57,7 +57,7 @@ if (choice == 0) {
 }
 ```
 
-### 🖼️ Visuals & Characters
+### Visuals & Characters
 *   **`scene(imageName)`**: Sets the background (file name in `resources/backgrounds` without extension).
 *   **`show(name, imageName, [x], [y], [scale])`**: Displays a character. 
     *   `x, y`: Screen coordinates (top-left is 0,0).
@@ -77,12 +77,12 @@ move("Alice", 500, 200, 1000, "EASE_OUT_BOUNCE");
 scale("Alice", 1.5, 500, "EASE_IN_OUT_CUBIC");
 ```
 
-### 🎵 Audio
+### Audio
 *   **`playMusic(name)`** / **`music(name)`**: Loops a music track from `resources/audio`.
 *   **`stopMusic()`**: Stops currently playing music.
 *   **`playSound(name)`** / **`sound(name)`**: Plays a sound effect once.
 
-### 🖥️ Window & UI Manipulation (Meta Features)
+### Window & UI Manipulation (Meta Features)
 Break the fourth wall or create dynamic effects by manipulating the game window itself.
 
 *   **`windowTitle(text)`**: Changes the OS window title.
@@ -101,7 +101,7 @@ windowShake(10, 500); // Shake intensity 10 for 0.5s
 fakeError("System Failure", "Just kidding!");
 ```
 
-### 💻 Sub-Windows (Multi-Window Support)
+### Sub-Windows (Multi-Window Support)
 Create secondary floating windows that contain their own backgrounds and characters.
 
 *   **`createSubWindow(id, title, w, h)`**: Spawns a new window.
