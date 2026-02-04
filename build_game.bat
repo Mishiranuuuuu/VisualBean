@@ -33,6 +33,10 @@ echo @echo off > "%DIST_DIR%\Play.bat"
 echo java -jar Game.jar >> "%DIST_DIR%\Play.bat"
 echo pause >> "%DIST_DIR%\Play.bat"
 
+echo   - Creating Linux Launcher (Play.sh)...
+echo #!/bin/sh > "%DIST_DIR%\Play.sh"
+echo java -jar Game.jar >> "%DIST_DIR%\Play.sh"
+
 echo   - Compiling EXE launcher...
 set CSC=""
 if exist "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe" set CSC="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"

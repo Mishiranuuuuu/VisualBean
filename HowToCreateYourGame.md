@@ -144,4 +144,6 @@ Edit `resources/theme.css` to completely change the look of the interface. You c
 1.  Run **`build_game.bat`**.
 2.  Wait for the compilation to finish.
 3.  Check the **`dist/`** folder.
+    *   **Windows User**: Run `Play.bat` (or `Game.exe`).
+    *   **Linux User**: Run `Play.sh` (requires Java installed).
 4.  Zip the **`dist`** folder and share it!
