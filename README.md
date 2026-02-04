@@ -1,63 +1,92 @@
 # Java Visual Novel Engine
 
-A simple Ren'Py-like visual novel engine written in Java using Swing.
+A powerful, lightweight, and customizable engine for creating Visual Novels using Java and Swing. Designed to be easy to use for developers while offering deep customization through CSS-like theming and Java-based scripting.
 
-## Features
-- **Scripting in Java**: Write your stories as Java classes extending `GameScript`.
-- **Backgrounds**: Support for loading images or solid colors.
-- **Characters**: Sprite system.
-- **Dialogue**: Typical name/text display.
-- **Audio**: Background music and Sound Effects.
-- **Resources**: Organized asset loading.
+## ✨ Features
 
-## How to Run
+*   **Native Java Scripting**: Write your game logic using standard Java. Use loops, conditionals, and variables freely.
+*   **Dynamic UI Styling**: Customize every aspect of the interface (Dialog boxes, Menus, Buttons) using a simple `theme.css` file.
+*   **Rich Visuals**:
+    *   Background and Character Sprite support (PNG/JPG).
+    *   **Sub-Windows**: Create multiple floating windows for unique storytelling elements.
+    *   **Animations**: Smooth window centering, scaling, and character transitions.
+*   **Robust Save System**:
+    *   9 Save Slots with visual previews.
+    *   Save/Load game state functionality.
+    *   Delete save files directly from the UI.
+    *   Persists window positions and preferences.
+*   **Audio**: Support for Background Music (BGM) and Sound Effects (SFX) (WAV/AU formats).
+*   **Window Management**: Custom window titles, resizable windows, and animated interactions.
 
-1. **Compile**:
-   ```
-   javac -d bin -sourcepath src src/com/vnengine/Main.java
-   ```
+## 🚀 Getting Started
 
-2. **Run**:
-   ```
-   java -cp bin com.vnengine.Main
-   ```
-   *Or just run `run.bat` on Windows.*
+### Prerequisites
 
-## Writing a Story
+*   **Java Development Kit (JDK) 8** or higher installed.
 
-Create a class in `src/com/vnengine/game/` extending `GameScript`:
+### Installation
+
+1.  Clone this repository:
+    ```bash
+    git clone https://github.com/yourusername/java-vn-engine.git
+    cd java-vn-engine
+    ```
+2.  (Optional) Run `setup_git.bat` to initialize the local environment if needed.
+
+## 🎮 Running the Engine
+
+We provide several batch scripts to make your life easier:
+
+*   **`run.bat`**: Compiles and runs the current project. This is your main entry point.
+*   **`compile_and_run_demo.bat`**: Specifically for testing the demo inclusions.
+*   **`build_game.bat`**: Compiles the game into a standalone `dist` folder ready for distribution.
+
+## ✍️ Creating Your Story
+
+For a detailed guide on creating your own Visual Novel, please refer to **[HowToCreateYourGame.md](HowToCreateYourGame.md)** included in this repository.
+
+### Quick Example
+
+Scripts are located in `src/com/vnengine/game/`. Inherit from `GameScript` to start:
 
 ```java
-import com.vnengine.script.GameScript;
-
-public class MyNewStory extends GameScript {
+public class MyStory extends GameScript {
     @Override
     public void run() {
-        playMusic("happy_vibes");
+        scene("classroom");
+        playMusic("bgm_happy");
         
-        scene("bg_classroom");
-        show("Alice", "alice_happy");
-        say("Alice", "Hello!");
+        show("Alice", "smile");
+        say("Alice", "Hi! Welcome to the Java VN Engine.");
         
-        playSound("surprise");
-        int choice = menu("Do you like Java?", "Yes", "No");
-        
+        int choice = menu("Ready to start?", "Yes!", "Not yet.");
         if (choice == 0) {
-            say("Alice", "Me too!");
-        } else {
-            say("Alice", "Oh...");
+            say("Alice", "Great! Let's go!");
         }
-        
-        stopMusic();
     }
 }
 ```
 
-## Resources Structure
-Place your assets in the `resources` folder:
-*   `resources/backgrounds/`: Background images (jpg/png)
-*   `resources/characters/`: Character sprites (png)
-*   `resources/audio/music/`: Background music (wav/au/aiff)
-*   `resources/audio/sfx/`: Sound effects (wav/au/aiff)
+## 🎨 Theming
 
-Note: Pure MP3 support requires external libraries (like JLayer), so stick to **WAV** for this vanilla implementation.
+Modify `resources/theme.css` to change the look of your game instantly:
+
+```css
+.dialog-box {
+    background-color: #222222;
+    text-color: #FFFFFF;
+    font-family: "Segoe UI";
+    opacity: 200;
+}
+```
+
+## 🛠️ Build for Release
+
+To package your game for players:
+1.  Double-click `build_game.bat`.
+2.  Find your game in the new `dist/` folder.
+3.  Share the `dist/` folder! It contains the executable jar and all resources.
+
+## 📄 License
+
+This project is open source.
