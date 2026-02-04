@@ -1,4 +1,4 @@
-# Java Visual Novel Engine
+# VisualBaen Engine
 
 A powerful, lightweight, and customizable engine for creating Visual Novels using Java and Swing. Designed to be easy to use for developers while offering deep customization through CSS-like theming and Java-based scripting.
 
