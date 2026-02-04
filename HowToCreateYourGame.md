@@ -1,127 +1,147 @@
-# How to Create Your Own Visual Novel
+# Java Visual Novel Engine - User Manual
 
-Welcome to the **Java Visual Novel Engine**! This engine is designed to be a flexible and easy-to-use framework for creating your own visual novels using Java and CSS.
+Welcome to the **Java Visual Novel Engine**! This manual documents how to create your own visual novels, covering everything from basic script writing to advanced feature like window manipulation and sub-windows.
 
-## 1. Project Structure
+## 1. Getting Started
 
-Here is a quick overview of the most important folders for you:
+### Project Structure
+*   **`src/com/vnengine/game/`**: Your game scripts (Java files) live here.
+*   **`resources/`**: Your assets repository.
+    *   `backgrounds/`: Background images (JPG/PNG).
+    *   `characters/`: Character sprites (PNG with transparency).
+    *   `audio/`: Music and Sound Effects (WAV/AU).
+*   **`resources/theme.css`**: UI styling.
 
-*   **`src/com/vnengine/game/`**: This is where your game scripts live.
-*   **`resources/`**: This is where all your assets (images, audio, theme) go.
-    *   `resources/backgrounds/`: Background images.
-    *   `resources/characters/`: Character sprites.
-    *   `resources/audio/`: Music and sound effects.
-    *   `resources/theme.css`: The styling file for the UI.
-
-## 2. Writing Your Story
-
-The core of your game is a **Script**. The engine comes with an example script in `src/com/vnengine/game/MyGame.java`.
-
-### Creating a New Script
-1.  Create a new Java class in `src/com/vnengine/game/` (e.g., `MyNewStory.java`).
-2.  Make it extend `GameScript`.
-3.  Implement the `run()` method.
+### Creating Your First Script
+1.  Create a new file `MyStory.java` in `src/com/vnengine/game/`.
+2.  Extend `GameScript` and implement `run()`.
 
 ```java
 package com.vnengine.game;
 
 import com.vnengine.script.GameScript;
 
-public class MyNewStory extends GameScript {
+public class MyStory extends GameScript {
     @Override
     public void run() {
-        // Setup the scene
-        scene("classroom_bg"); 
-        windowTitle("My First Visual Novel");
-
-        // Character enters
-        show("Alice", "alice_happy", 100, 150);
+        scene("classroom");
+        playMusic("happy_vibes");
         
-        // Dialogue
-        narrator("It was a bright sunny day.");
-        say("Alice", "Hello there! Welcome to my game.");
+        show("Alice", "alice_smile", 100, 200);
+        say("Alice", "Hello! Welcome to my visual novel.");
         
-        // Choice
-        int choice = menu("What should I say?", 
-            "Hello Alice!", 
-            "I'm busy."
-        );
-        
-        if (choice == 0) {
-            say("Me", "Hello Alice! Nice to meet you.");
-            show("Alice", "alice_blush");
-            say("Alice", "Oh, you're so polite!");
-        } else {
-            say("Me", "I'm busy right now.");
-            show("Alice", "alice_sad");
-            say("Alice", "Oh... okay then.");
-        }
+        narrator("This is a simple narration line.");
     }
 }
 ```
 
-### Key Commands
-*   **`scene(imageName)`**: Sets the background image.
-*   **`show(name, imageName, x, y)`**: Shows a character sprite.
-*   **`say(name, text)`**: distinct dialogue line. Use `narrator(text)` for narration.
-*   **`menu(prompt, option1, option2...)`**: Shows a choice menu. Returns the index of the selected option (0, 1, 2...).
-*   **`playMusic(name)`** / **`playSound(name)`**: Plays audio.
+3.  **Activate it**: Open `src/com/vnengine/Main.java`, find `engine.executeScript(...)` and change `new MyGame()` to `new MyStory()`.
 
-## 3. Customizing the Look (Theming)
+---
 
-You don't need to touch Java code to change the UI colors! Open **`resources/theme.css`**.
+## 2. API Reference
 
-You can customize:
-*   **Main Menu**: Colors, gradients, title font.
-*   **Dialogue Box**: Background opacity, text colors, fonts, padding.
-*   **Buttons**: Colors, hover effects, border radius.
-*   **Save/Load Screens**: Colors for empty/filled slots.
+All methods below are available inside your `GameScript` class.
 
-**Example `theme.css` snippet:**
-```css
-.dialog-box {
-    background-color: #000000;
-    opacity: 180; /* Make it semi-transparent */
-    border-color: #FFFFFF;
-    text-color: #FFFFFF;
-    font-family: SansSerif;
-    font-size: 20;
+### 🎭 Narrative Control
+*   **`say(name, text)`**: Character speaks.
+*   **`narrator(text)`**: Narration text (no name).
+*   **`menu(option1, option2, ...)`**: Displays a choice menu. Returns the index selected (0, 1, 2...).
+
+```java
+int choice = menu("Do you like cats?", "Yes", "No");
+if (choice == 0) {
+    say("Alice", "Me too!");
+} else {
+    say("Alice", "Oh, I see...");
 }
 ```
 
-## 4. Setting Up Your Game
-
-To tell the engine to run *your* script instead of the default one:
-
-1.  Open `src/com/vnengine/Main.java`.
-2.  Find the line `GameScript script = new MyGame();`.
-3.  Change `MyGame` to the name of your class (e.g., `MyNewStory`).
+### 🖼️ Visuals & Characters
+*   **`scene(imageName)`**: Sets the background (file name in `resources/backgrounds` without extension).
+*   **`show(name, imageName, [x], [y], [scale])`**: Displays a character. 
+    *   `x, y`: Screen coordinates (top-left is 0,0).
+    *   `scale`: Size multiplier (1.0 is default).
+*   **`hide(name)`**: Removes a character.
+*   **`move(name, x, y, duration, [easing])`**: Animates character movement.
+*   **`scale(name, factor, duration, [easing])`**: Animates character scaling.
 
 ```java
-// Inside Main.java
-engine.showMainMenu(() -> {
-    GameScript script = new MyNewStory(); // <-- Change this line
-    script.setEngine(engine);
-    engine.executeScript(script);
-});
+// Show Alice at (100, 200)
+show("Alice", "alice_neutral", 100, 200);
+
+// Slide her to (500, 200) over 1 second with a bounce effect
+move("Alice", 500, 200, 1000, "EASE_OUT_BOUNCE");
+
+// Scale her up to 1.5x over 0.5 seconds
+scale("Alice", 1.5, 500, "EASE_IN_OUT_CUBIC");
 ```
 
-## 5. Adding Assets
+### 🎵 Audio
+*   **`playMusic(name)`** / **`music(name)`**: Loops a music track from `resources/audio`.
+*   **`stopMusic()`**: Stops currently playing music.
+*   **`playSound(name)`** / **`sound(name)`**: Plays a sound effect once.
 
-*   **Images**: .png, .jpg supported. Place in `resources/backgrounds` or `resources/characters`.
-*   **Audio**: .wav, .au supported (standard Java support). Place in `resources/audio`.
+### 🖥️ Window & UI Manipulation (Meta Features)
+Break the fourth wall or create dynamic effects by manipulating the game window itself.
 
-## 6. Building for Release
+*   **`windowTitle(text)`**: Changes the OS window title.
+*   **`windowShake(intensity, duration)`**: Shakes the application window.
+*   **`windowMove(x, y)`**: Instantly moves the window on screen.
+*   **`windowSlide(x, y, duration, [easing])`**: Smoothly slides the window across the screen.
+*   **`windowCenter([duration], [easing])`**: Centers the window on the monitor.
+*   **`resizeWindow(w, h, duration, [easing])`**: Smoothly resizes the window.
+*   **`resizeWindowCentered(w, h, duration, [easing])`**: Resizes while changing position to stay centered.
+*   **`dialogPos(x, y)`**: Sets the dialogue box position.
+*   **`dialogSlide(x, y, duration, [easing])`**: Animates the dialogue box.
+*   **`fakeError(title, message, [x, y])`**: Spawns a fake system error popup. Only one exists at a time.
 
-To turn your project into a playable game that you can share:
+```java
+windowShake(10, 500); // Shake intensity 10 for 0.5s
+fakeError("System Failure", "Just kidding!");
+```
 
-1.  Run the **`build_game.bat`** script found in the main project folder.
-2.  Wait for the process to complete.
-3.  A new folder named **`dist`** will be created.
-4.  Inside `dist`, you will find:
-    *   `Game.jar`: The game executable.
-    *   `resources/`: Your assets.
-    *   `Play.bat`: A launcher script.
-5.  **To Share**: simply Zip the entire `dist` folder and send it to your players!
+### 💻 Sub-Windows (Multi-Window Support)
+Create secondary floating windows that contain their own backgrounds and characters.
 
-Happy Creating!
+*   **`createSubWindow(id, title, w, h)`**: Spawns a new window.
+*   **`subWindowBg(id, imageName)`**: Sets background for sub-window.
+*   **`showInSubWindow(id, name, image, x, y)`**: Shows character in sub-window.
+*   **`subWindowSay(id, name, text)`**: Displays text in the sub-window (does not halt main script).
+*   **`moveInSubWindow(id, name, x, y)`**: Moves character within sub-window.
+*   **`subWindowPos(id, x, y)`**: Moves the sub-window itself on screen.
+*   **`closeSubWindow(id)`**: Destroys the sub-window.
+
+---
+
+## 3. Animations & Easing
+
+For any method taking a `duration` (in milliseconds) and `easing` (String), you can control the "feel" of the animation.
+
+**Common Easing Functions:**
+*   `"LINEAR"`: Constant speed.
+*   `"EASE_IN_QUAD"`, `"EASE_OUT_QUAD"`: Smooth start or end.
+*   `"EASE_IN_OUT_CUBIC"`: Very smooth acceleration and deceleration (Standard).
+*   `"EASE_OUT_BOUNCE"`: Bounces at the end (Great for character entry or window drop).
+*   `"EASE_OUT_ELASTIC"`: Wiggles like jelly.
+
+---
+
+## 4. Customizing Themes (`theme.css`)
+
+Edit `resources/theme.css` to completely change the look of the interface. You can verify changes by restarting the game.
+
+**Key Classes:**
+*   `.dialog-box`: The main text area.
+*   `.name-label`: The character name box.
+*   `.menu-button`: Choice buttons.
+*   `.save-slot`: Save/Load entries.
+
+---
+
+## 5. Building for Release
+
+1.  Run **`build_game.bat`**.
+2.  Wait for the compilation to finish.
+3.  Check the **`dist/`** folder.
+4.  Zip the **`dist`** folder and share it!
