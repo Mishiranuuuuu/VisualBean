@@ -38,7 +38,6 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
 We provide several batch scripts to make your life easier:
 
 *   **`run.bat`**: Compiles and runs the current project. This is your main entry point.
-*   **`compile_and_run_demo.bat`**: Specifically for testing the demo inclusions.
 *   **`build_game.bat`**: Compiles the game into a standalone `dist` folder ready for distribution.
 
 ## Creating Your Story
