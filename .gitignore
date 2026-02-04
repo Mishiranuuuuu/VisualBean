@@ -22,3 +22,9 @@ Thumbs.db
 .classpath
 .project
 .settings/
+
+# User Scripts & Docs to Ignore
+update_repo.bat
+setup_git.bat
+fix_window.py
+HowToCreateYourGame.md
