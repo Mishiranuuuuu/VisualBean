@@ -1,4 +1,4 @@
-# Java Visual Novel Engine - User Manual
+# VisualBean Engine - User Manual
 
 Welcome to the **Java Visual Novel Engine**! This manual documents how to create your own visual novels, covering everything from basic script writing to advanced feature like window manipulation and sub-windows.
 
