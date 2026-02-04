@@ -89,4 +89,4 @@ To package your game for players:
 
 ## 📄 License
 
-This project is open source.
+MIT License
