@@ -873,6 +873,9 @@ public class GameEngine {
         // Optionally set a default background for the menu if desired
         // this.currentBackground = "menu_bg";
 
+        // Start main menu music
+        playMusic("Enjoy", true);
+
         window.repaint();
     }
 
@@ -883,6 +886,7 @@ public class GameEngine {
     public void startGame() {
         if (startGameCallback != null) {
             this.isMainMenu = false;
+            stopMusic();
             startGameCallback.run();
         }
     }
