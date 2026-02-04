@@ -12,9 +12,47 @@ public class AudioManager {
 
     private String currentMusicName;
 
+    private float musicVolume = 0.8f;
+    private float sfxVolume = 1.0f;
+
     public boolean isPlaying(String name) {
         return currentMusic != null && currentMusic.isRunning() &&
                 name != null && name.equals(currentMusicName);
+    }
+
+    public void setMusicVolume(float volume) {
+        this.musicVolume = volume;
+        if (currentMusic != null) {
+            setVolume(currentMusic, musicVolume);
+        }
+    }
+
+    public void setSfxVolume(float volume) {
+        this.sfxVolume = volume;
+    }
+
+    private void setVolume(Clip clip, float volume) {
+        try {
+            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                // Convert 0.0-1.0 to Decibels
+                // 1.0 -> 0 dB
+                // 0.0 -> -80 dB (effectively mute)
+                float dB;
+                if (volume <= 0.0001f) {
+                    dB = -80.0f;
+                } else {
+                    dB = (float) (Math.log10(volume) * 20.0);
+                }
+
+                // Clamp to supported range
+                dB = Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), dB));
+
+                gainControl.setValue(dB);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void playMusic(String name, boolean loop) {
@@ -40,6 +78,9 @@ public class AudioManager {
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
                 currentMusic = AudioSystem.getClip();
                 currentMusic.open(audioStream);
+
+                // Apply volume
+                setVolume(currentMusic, musicVolume);
 
                 if (loop) {
                     currentMusic.loop(Clip.LOOP_CONTINUOUSLY);
@@ -79,6 +120,9 @@ public class AudioManager {
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioStream);
+
+                setVolume(clip, sfxVolume);
+
                 clip.start();
             } else {
                 System.err.println("SFX file not found: " + name);

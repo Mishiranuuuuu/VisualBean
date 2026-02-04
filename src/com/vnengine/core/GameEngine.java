@@ -40,6 +40,16 @@ public class GameEngine {
         this.characterScales = new HashMap<>(); // Init
         this.audioManager = new AudioManager();
         this.window = new GameWindow(this);
+        applySettings();
+    }
+
+    public void applySettings() {
+        SettingsManager settings = SettingsManager.getInstance();
+        audioManager.setMusicVolume(settings.getMusicVolume());
+        audioManager.setSfxVolume(settings.getSfxVolume());
+        if (window != null) {
+            window.applySettings();
+        }
     }
 
     // History
