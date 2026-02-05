@@ -55,12 +55,21 @@ fi
 # 5. Create Launchers
 echo "[INFO] Creating Launchers..."
 
-# Linux/Mac Launcher
+# Linux Launcher
 cat <<EOF > "$DIST_DIR/Play.sh"
-#!/bin/sh
+#!/bin/bash
+cd "\$(dirname "\$0")"
 java -jar $JAR_NAME
 EOF
 chmod +x "$DIST_DIR/Play.sh"
+
+# MacOS Launcher (Game.command is clickable on Mac)
+cat <<EOF > "$DIST_DIR/Play.command"
+#!/bin/bash
+cd "\$(dirname "\$0")"
+java -jar $JAR_NAME
+EOF
+chmod +x "$DIST_DIR/Play.command"
 
 # Windows Launcher (for convenience if distributing across platforms)
 cat <<EOF > "$DIST_DIR/Play.bat"
