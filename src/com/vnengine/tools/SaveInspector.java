@@ -5,7 +5,6 @@ import java.io.*;
 
 public class SaveInspector {
     public static void main(String[] args) {
-        System.out.println("--- Save Inspector v1.0 ---");
         File dir = new File("saves");
         if (!dir.exists()) {
             System.out.println("No 'saves' directory found in " + new File(".").getAbsolutePath());
