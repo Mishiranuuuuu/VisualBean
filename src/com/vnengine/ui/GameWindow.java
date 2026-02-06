@@ -150,6 +150,7 @@ public class GameWindow extends JFrame {
         im.put(KeyStroke.getKeyStroke("SPACE"), "advance");
         im.put(KeyStroke.getKeyStroke("ENTER"), "advance");
         im.put(KeyStroke.getKeyStroke("ESCAPE"), "closeOverlay");
+        im.put(KeyStroke.getKeyStroke("released A"), "toggleAuto");
 
         am.put("advance", new AbstractAction() {
             @Override
@@ -170,6 +171,16 @@ public class GameWindow extends JFrame {
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 if (currentOverlay != OverlayState.NONE) {
                     closeOverlay();
+                }
+            }
+        });
+
+        am.put("toggleAuto", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                if (currentOverlay == OverlayState.NONE) {
+                    engine.setAutoMode(!engine.isAutoMode());
+                    panel.repaint();
                 }
             }
         });
@@ -1282,6 +1293,33 @@ public class GameWindow extends JFrame {
                 g2d.setColor(fillColor);
                 g2d.fillRect(checkX + scale(5), rowY + scale(5), scale(20), scale(20));
             }
+
+            // 5. Controls Info
+            rowY += scale(60);
+            g2d.setColor(new Color(200, 200, 200, alpha));
+            g2d.setFont(scale(style.getFont(".options", Font.BOLD, 18)));
+            g2d.drawString("Controls", contentX, rowY);
+
+            g2d.setFont(scale(style.getFont(".options", Font.PLAIN, 16)));
+            int controlY = rowY + scale(30);
+            int controlGap = scale(25);
+
+            drawControlLine(g2d, "Advance / Select", "Space / Enter / Click", contentX, controlY, alpha);
+            drawControlLine(g2d, "Toggle Auto", "A", contentX, controlY + controlGap, alpha);
+            drawControlLine(g2d, "Hide UI", "Right Click", contentX, controlY + controlGap * 2, alpha);
+            drawControlLine(g2d, "Back / Close Menu", "Esc", contentX, controlY + controlGap * 3, alpha);
+        }
+
+        private void drawControlLine(Graphics2D g2d, String action, String keys, int x, int y, int globalAlpha) {
+            float fade = globalAlpha / 255f;
+            int a = (int) (200 * fade);
+
+            g2d.setColor(new Color(180, 180, 180, a));
+            g2d.drawString(action, x, y);
+
+            g2d.setColor(new Color(100, 200, 255, a));
+            int keyX = x + scale(200);
+            g2d.drawString(keys, keyX, y);
         }
 
         private void drawOptionSlider(Graphics2D g2d, String label, float val, int y, int startX, int labelW,
