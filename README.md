@@ -28,8 +28,8 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
 
 1.  Clone this repository:
     ```bash
-    git clone https://github.com/yourusername/java-vn-engine.git
-    cd java-vn-engine
+    git clone https://github.com/Mishiranuuuuu/VisualBean
+    cd VisualBean
     ```
 2.  (Optional) Run `setup_git.bat` to initialize the local environment if needed.
 
