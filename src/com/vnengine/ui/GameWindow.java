@@ -56,6 +56,9 @@ public class GameWindow extends JFrame {
     private float overlayAlpha = 0f;
     private OverlayState targetOverlay = OverlayState.NONE;
 
+    // Auto Mode
+    private long autoModeDelayTarget = -1;
+
     public void applySettings() {
         SettingsManager sm = SettingsManager.getInstance();
         panel.renderer.setTypeSpeed(sm.getTextSpeed());
@@ -208,6 +211,8 @@ public class GameWindow extends JFrame {
                 int histX = panel.getWidth() - scale(100);
                 int saveX = histX - tbW - scale(10);
                 int loadX = saveX - tbW - scale(10);
+                int autoX = loadX - tbW - scale(10);
+                int settingsX = autoX - tbW - scale(10);
 
                 // Toolbar checks
                 if (e.getY() >= tbY && e.getY() <= tbY + tbH) {
@@ -223,7 +228,12 @@ public class GameWindow extends JFrame {
                         openOverlay(OverlayState.LOAD);
                         return;
                     }
-                    if (e.getX() >= loadX - tbW - scale(10) && e.getX() <= loadX - scale(10)) {
+                    if (e.getX() >= autoX && e.getX() <= autoX + tbW) {
+                        engine.setAutoMode(!engine.isAutoMode());
+                        panel.repaint();
+                        return;
+                    }
+                    if (e.getX() >= settingsX && e.getX() <= settingsX + tbW) {
                         openOverlay(OverlayState.SETTINGS);
                         return;
                     }
@@ -237,6 +247,10 @@ public class GameWindow extends JFrame {
                         engine.onOptionSelected(idx);
                     }
                 } else {
+                    // Stop auto mode on manual interaction
+                    if (engine.isAutoMode()) {
+                        engine.setAutoMode(false);
+                    }
                     engine.onUserClick();
                 }
             }
@@ -280,6 +294,22 @@ public class GameWindow extends JFrame {
                 if (overlayAlpha == 0f) {
                     currentOverlay = OverlayState.NONE;
                 }
+            }
+
+            // Auto Mode Logic
+            if (engine.isAutoMode() && currentOverlay == OverlayState.NONE && uiVisible) {
+                if (panel.renderer.isFinished()) {
+                    if (autoModeDelayTarget == -1) {
+                        autoModeDelayTarget = System.currentTimeMillis() + 1500; // 1.5s delay after text finishes
+                    } else if (System.currentTimeMillis() > autoModeDelayTarget) {
+                        engine.onUserClick();
+                        autoModeDelayTarget = -1;
+                    }
+                } else {
+                    autoModeDelayTarget = -1;
+                }
+            } else {
+                autoModeDelayTarget = -1;
             }
 
             panel.repaint();
@@ -732,16 +762,19 @@ public class GameWindow extends JFrame {
                     int tbY = scale(10);
 
                     int histX = getWidth() - tbW - scale(20);
-                    drawToolbarButton(g2d, "History", histX, tbY, tbW, tbH);
+                    drawToolbarButton(g2d, "History", histX, tbY, tbW, tbH, false);
 
                     int saveX = histX - tbW - scale(10);
-                    drawToolbarButton(g2d, "Save", saveX, tbY, tbW, tbH);
+                    drawToolbarButton(g2d, "Save", saveX, tbY, tbW, tbH, false);
 
                     int loadX = saveX - tbW - scale(10);
-                    drawToolbarButton(g2d, "Load", loadX, tbY, tbW, tbH);
+                    drawToolbarButton(g2d, "Load", loadX, tbY, tbW, tbH, false);
 
-                    int settingsX = loadX - tbW - scale(10);
-                    drawToolbarButton(g2d, "Config", settingsX, tbY, tbW, tbH);
+                    int autoX = loadX - tbW - scale(10);
+                    drawToolbarButton(g2d, "Auto", autoX, tbY, tbW, tbH, engine.isAutoMode());
+
+                    int settingsX = autoX - tbW - scale(10);
+                    drawToolbarButton(g2d, "Config", settingsX, tbY, tbW, tbH, false);
 
                     // Draw speaker name
                     if (speaker != null) {
@@ -1273,10 +1306,15 @@ public class GameWindow extends JFrame {
             g2d.fillOval(sliderX + fillW - knobW / 2, y - scale(4), knobW, knobH);
         }
 
-        private void drawToolbarButton(Graphics2D g, String text, int x, int y, int w, int h) {
+        private void drawToolbarButton(Graphics2D g, String text, int x, int y, int w, int h, boolean active) {
             StyleManager sm = StyleManager.getInstance();
 
-            Color bgColor = sm.getColor(".toolbar-button", "background-color", new Color(100, 100, 100, 150));
+            Color bgColor;
+            if (active) {
+                bgColor = new Color(100, 180, 255, 200); // Highlighted
+            } else {
+                bgColor = sm.getColor(".toolbar-button", "background-color", new Color(100, 100, 100, 150));
+            }
             g.setColor(bgColor);
             int radius = scale(sm.getInt(".toolbar-button", "border-radius", 8));
             g.fillRoundRect(x, y, w, h, radius, radius);

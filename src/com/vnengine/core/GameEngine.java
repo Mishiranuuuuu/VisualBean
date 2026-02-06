@@ -26,6 +26,7 @@ public class GameEngine {
     // Simple state
     private volatile boolean waitingForClick = false;
     private volatile boolean scriptCancelled = false; // Flag to stop script on load
+    private volatile boolean autoMode = false;
 
     // Animation tracking - to cancel previous animations before starting new ones
     private Map<String, Thread> characterAnimations = new HashMap<>(); // Character name -> position animation thread
@@ -466,6 +467,14 @@ public class GameEngine {
 
     public java.util.List<LogEntry> getBacklog() {
         return backlog;
+    }
+
+    public boolean isAutoMode() {
+        return autoMode;
+    }
+
+    public void setAutoMode(boolean autoMode) {
+        this.autoMode = autoMode;
     }
 
     // --- Script Execution ---
