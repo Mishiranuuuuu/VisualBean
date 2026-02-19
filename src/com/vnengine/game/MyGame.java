@@ -47,6 +47,7 @@ public class MyGame extends GameScript {
         // ========================================
         boolean running = true;
         while (running) {
+            resizeWindowCentered(1280, 720, 800, "EASE_IN_OUT_CUBIC");
             show(SAKURA, "demo_girl_smile");
             say(SAKURA, "What would you like to see?");
 
@@ -55,18 +56,16 @@ public class MyGame extends GameScript {
                     "Window & UI Effects (Shake, Slide, Dialog)",
                     "Sub-Window Magic (Multi-window demo)",
                     "System Features (Save/Load, Errors, Website)",
+                    "Kenic Text Renderer (Animated text effects)",
                     "End Demo");
 
-            if (choice == 0) {
-                characterDemo();
-            } else if (choice == 1) {
-                windowDemo();
-            } else if (choice == 2) {
-                subWindowDemo();
-            } else if (choice == 3) {
-                systemDemo();
-            } else {
-                running = false;
+            switch (choice) {
+                case 0 -> characterDemo();
+                case 1 -> windowDemo();
+                case 2 -> subWindowDemo();
+                case 3 -> systemDemo();
+                case 4 -> kineticTextDemo();
+                default -> running = false;
             }
         }
 
@@ -224,6 +223,20 @@ public class MyGame extends GameScript {
          * say(SAKURA, "And back to windowed.");
          */
     }
+
+    // ========================================
+    // DEMO: Kinetic Text Renderer
+    // ========================================
+    private void kineticTextDemo() {
+        show(SAKURA, "demo_girl_happy");
+        say(SAKURA, "Finally, let's see the Kinetic Text Renderer in action!");
+        say(SAKURA, "This allows for animated text effects like shaking, waving, and color changes!");
+        say(SAKURA, "Here's an example of how it works:");
+        String kineticText = "This is [shake]shaking[/shake], this is [wave]waving[/wave], and this is [color=#ff0000]red text[/color]!";
+        say(SAKURA, kineticText);
+        say(SAKURA, "You can combine these effects in any way you like!");
+    }
+
 
     // ========================================
     // CONCLUSION
