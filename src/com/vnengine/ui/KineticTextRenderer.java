@@ -10,7 +10,7 @@ public class KineticTextRenderer {
     private String rawText;
     private List<Glyph> glyphs = new ArrayList<>();
     private float visibleGlyphs = 0;
-    private float typeSpeed = 0.5f; // Glyphs per frame (at 60fps) -> 30 chars/sec
+    private float typeSpeed = 0.5f;
 
     public void setTypeSpeed(float speed) {
         this.typeSpeed = speed;
@@ -19,7 +19,6 @@ public class KineticTextRenderer {
     private boolean isFinished = false;
     private long lastTime;
 
-    // Animation states
     private float time = 0; // Accumulated time for wave effects
 
     private Font baseFont;
@@ -120,7 +119,6 @@ public class KineticTextRenderer {
         String pattern = "(\\[/?[a-z]+(=#?[a-fA-F0-9]+)?\\])";
         String[] parts = text.split(pattern);
 
-        // To reconstruct correctly, we need the matches too.
         Matcher m = Pattern.compile(pattern).matcher(text);
 
         int lastIdx = 0;

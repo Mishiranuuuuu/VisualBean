@@ -10,11 +10,11 @@ import javax.swing.SwingUtilities;
 
 public class GameEngine {
     private GameWindow window;
-    private Map<String, SubWindow> subWindows = new HashMap<>(); // ID -> SubWindow instance
+    private Map<String, SubWindow> subWindows = new HashMap<>();
     private String currentBackground;
-    private Map<String, String> visibleCharacters; // Name -> ImagePath
-    private Map<String, Double> characterScales; // Name -> Scale factor
-    private Map<String, Point> characterPositions; // Name -> (x, y)
+    private Map<String, String> visibleCharacters;
+    private Map<String, Double> characterScales;
+    private Map<String, Point> characterPositions;
     private Point customDialogPosition = null;
     private String currentWindowTitle = "Java Visual Novel Engine";
 
@@ -23,22 +23,20 @@ public class GameEngine {
 
     private AudioManager audioManager;
 
-    // Simple state
     private volatile boolean waitingForClick = false;
-    private volatile boolean scriptCancelled = false; // Flag to stop script on load
+    private volatile boolean scriptCancelled = false;
     private volatile boolean autoMode = false;
 
-    // Animation tracking - to cancel previous animations before starting new ones
-    private Map<String, Thread> characterAnimations = new HashMap<>(); // Character name -> position animation thread
-    private Map<String, Thread> characterScaleAnimations = new HashMap<>(); // Character name -> scale animation thread
-    private Thread windowAnimation = null; // Position animation
-    private Thread windowResizeAnimation = null; // Resize animation
+    private Map<String, Thread> characterAnimations = new HashMap<>();
+    private Map<String, Thread> characterScaleAnimations = new HashMap<>();
+    private Thread windowAnimation = null;
+    private Thread windowResizeAnimation = null;
     private Thread dialogAnimation = null;
 
     public GameEngine() {
         this.visibleCharacters = new HashMap<>();
         this.characterPositions = new HashMap<>();
-        this.characterScales = new HashMap<>(); // Init
+        this.characterScales = new HashMap<>();
         this.audioManager = new AudioManager();
         this.window = new GameWindow(this);
         applySettings();
@@ -53,7 +51,7 @@ public class GameEngine {
         }
     }
 
-    // History
+    // Dialogue history
     public static class LogEntry {
         public String speaker;
         public String text;
@@ -66,11 +64,9 @@ public class GameEngine {
 
     private java.util.List<LogEntry> backlog = new java.util.ArrayList<>();
 
-    // --- Scripting Commands ---
-
     public void setWindowSize(int width, int height) {
         if (isSkipping())
-            return; // Don't resize during replay
+            return;
         SwingUtilities.invokeLater(() -> {
             window.setSize(width, height);
             window.setLocationRelativeTo(null);
@@ -98,7 +94,7 @@ public class GameEngine {
 
     public void setBackground(String imagePath) {
         if (isSkipping())
-            return; // Maintain snapshot background
+            return;
         this.currentBackground = imagePath;
         window.repaint();
     }
@@ -113,7 +109,7 @@ public class GameEngine {
 
     public void showCharacter(String name, String imagePath, int x, int y, double scale) {
         if (isSkipping())
-            return; // Maintain snapshot characters
+            return;
 
         visibleCharacters.put(name, imagePath);
         if (x != -1 && y != -1) {
@@ -173,8 +169,7 @@ public class GameEngine {
         window.repaint();
     }
 
-    // --- Audio Wrappers ---
-    // We track the 'intended' music so we can restore it after skip
+    // Track intended music to restore it after skip-mode
     private String intendedMusic = null;
 
     public void playMusic(String name) {
@@ -201,9 +196,6 @@ public class GameEngine {
         }
     }
 
-    // ...
-
-    // Updated Getters
     public Point getCharacterPosition(String name) {
         return characterPositions.get(name);
     }
@@ -216,7 +208,6 @@ public class GameEngine {
         return customDialogPosition;
     }
 
-    // --- Getters for UI ---
     public String getCurrentBackground() {
         return currentBackground;
     }
@@ -237,8 +228,7 @@ public class GameEngine {
         return currentOptions;
     }
 
-    // --- Fake Error System ---
-    // Kept for compatibility if referenced elsewhere, but unused logic
+    // Native error popup system
     public static class FakeError {
         public String title;
         public String message;
@@ -260,7 +250,7 @@ public class GameEngine {
             return;
 
         SwingUtilities.invokeLater(() -> {
-            // Close existing if any
+            // Close existing popup if any
             if (currentErrorDialog != null && currentErrorDialog.isVisible()) {
                 currentErrorDialog.dispose();
             }
@@ -268,15 +258,13 @@ public class GameEngine {
             javax.swing.JOptionPane optionPane = new javax.swing.JOptionPane(message,
                     javax.swing.JOptionPane.ERROR_MESSAGE);
             currentErrorDialog = optionPane.createDialog(window, title);
-            currentErrorDialog.setModal(false); // Non-modal so the game loop (animations) continues
+            currentErrorDialog.setModal(false);
 
-            // Handle positioning
             if (x != -1 && y != -1) {
                 try {
                     Point pLoc = window.getContentPane().getLocationOnScreen();
                     currentErrorDialog.setLocation(pLoc.x + x, pLoc.y + y);
                 } catch (Exception e) {
-                    // Fallback if window not showing or other error
                     currentErrorDialog.setLocationRelativeTo(window);
                 }
             } else {
@@ -300,10 +288,10 @@ public class GameEngine {
     }
 
     public FakeError getFakeError() {
-        return null; // No longer used for drawing
+        return null;
     }
 
-    // --- Save/Load System ---
+    // Save/Load system
     private int currentStep = 0;
     private int targetStep = -1;
     private Runnable currentScript;
@@ -317,16 +305,16 @@ public class GameEngine {
 
         SaveData data = new SaveData(currentStep, desc);
 
-        // Capture State
+        // Capture visual state snapshot
         data.currentBackground = this.currentBackground;
         data.visibleCharacters = new HashMap<>(this.visibleCharacters);
         data.characterPositions = new HashMap<>(this.characterPositions);
         data.characterScales = new HashMap<>(this.characterScales);
-        data.currentMusic = this.intendedMusic; // Use intended music track name
+        data.currentMusic = this.intendedMusic;
         data.windowSize = window.getSize();
-        data.windowPosition = window.getLocation(); // Window screen position
+        data.windowPosition = window.getLocation();
         data.windowTitle = this.currentWindowTitle;
-        data.dialogPosition = this.customDialogPosition; // Dialog box position (may be null)
+        data.dialogPosition = this.customDialogPosition;
 
         SaveManager.save(slot, data);
     }
@@ -338,7 +326,7 @@ public class GameEngine {
             return;
         }
 
-        // 1. Restore Visual State IMMEDIATELY
+        // Restore visual state immediately so the player sees the saved scene
         this.currentStep = 0;
         this.targetStep = data.stepIndex;
 
@@ -347,24 +335,22 @@ public class GameEngine {
         this.characterPositions = new HashMap<>(data.characterPositions);
         this.characterScales = new HashMap<>(data.characterScales);
         this.intendedMusic = data.currentMusic;
-        this.customDialogPosition = data.dialogPosition; // Restore dialog position
+        this.customDialogPosition = data.dialogPosition;
         this.currentWindowTitle = data.windowTitle != null ? data.windowTitle : "Java Visual Novel Engine";
 
-        // Restore Window
         SwingUtilities.invokeLater(() -> {
             if (data.windowSize != null) {
                 window.setSize(data.windowSize);
             }
             if (data.windowPosition != null) {
-                window.setLocation(data.windowPosition); // Restore exact position
+                window.setLocation(data.windowPosition);
             } else {
-                window.setLocationRelativeTo(null); // Fallback to center
+                window.setLocationRelativeTo(null);
             }
             window.setTitle(currentWindowTitle);
             window.repaint();
         });
 
-        // Restore Music
         if (intendedMusic != null) {
             audioManager.playMusic(intendedMusic, true);
         } else {
@@ -374,25 +360,21 @@ public class GameEngine {
         this.waitingForClick = false;
         this.isMainMenu = false;
 
-        // 2. Restart Script to catch up Logical State (Variables, etc)
-        // We run in "Skipping" mode, but because we already restored visuals,
-        // the skipping functions should purely be for side-effect-less logic catchup.
+        // Replay script in skip-mode to rebuild logical state (variables, etc.)
         if (currentScript != null) {
             if (scriptThread != null && scriptThread.isAlive()) {
-                scriptCancelled = true; // Signal old script to stop
+                scriptCancelled = true;
                 synchronized (this) {
-                    notifyAll(); // Wake up any waiting threads
+                    notifyAll();
                 }
                 scriptThread.interrupt();
                 try {
-                    scriptThread.join(500); // Wait for old thread to die
+                    scriptThread.join(500);
                 } catch (InterruptedException e) {
-                    // Ignore
                 }
             }
             executeScript(currentScript);
         } else if (startGameCallback != null) {
-            // Start the script if loading from Main Menu
             startGameCallback.run();
         }
     }
@@ -403,19 +385,15 @@ public class GameEngine {
 
     public void say(String name, String text) {
         if (isSkipping()) {
+            // Skip mode: only increment step counter and rebuild history
             this.currentStep++;
-            // STRICTLY LOGIC ONLY. No UI updates.
-            // We do NOT add to backlog here if we want to avoid duplicates if we preserved
-            // history differently,
-            // but for now, we rebuild history.
             this.backlog.add(new LogEntry(name, text));
             return;
         }
 
-        // We reached the target!
+        // Reached target step, exit skip mode
         if (targetStep != -1 && currentStep == targetStep) {
-            targetStep = -1; // Done skipping
-            // Ensure the UI matches this final 'say' command
+            targetStep = -1;
             window.updateDialogue(name, text);
         }
 
@@ -430,20 +408,17 @@ public class GameEngine {
         waitForInput();
     }
 
-    // ... waitForInput, onUserClick ...
-
     private void waitForInput() {
         synchronized (this) {
             while (waitingForClick && !scriptCancelled) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    // If interrupted (e.g. by loadGame), stop waiting
+                    // Interrupted (e.g. by loadGame), stop waiting
                     waitingForClick = false;
                 }
             }
-            // If script was cancelled, throw to exit the script completely
+
             if (scriptCancelled) {
                 throw new RuntimeException("Script cancelled");
             }
@@ -451,7 +426,7 @@ public class GameEngine {
     }
 
     public void onUserClick() {
-        // If window is currently animating text, skip it first
+        // If text is still animating, complete it first before advancing
         if (window.isTextAnimating()) {
             window.skipTextAnimation();
             return;
@@ -477,32 +452,28 @@ public class GameEngine {
         this.autoMode = autoMode;
     }
 
-    // --- Script Execution ---
     public void executeScript(Runnable script) {
         this.currentScript = script;
-        this.scriptCancelled = false; // Reset cancellation flag for new script
+        this.scriptCancelled = false;
         this.scriptThread = new Thread(() -> {
             try {
                 script.run();
-                // If we finish skipping and reach the end, reset targetStep
                 targetStep = -1;
             } catch (Exception e) {
-                // Interrupted during load or cancelled
                 if (!(e instanceof RuntimeException && e.getMessage().equals("Script cancelled"))) {
-                    e.printStackTrace(); // Only print unexpected errors
                 }
             }
         });
         this.scriptThread.start();
     }
 
-    // --- Choice System ---
+    // Choice system
     private String[] currentOptions;
     private int selectedOptionIndex = -1;
 
     public int promptChoice(String[] options) {
         if (isSkipping()) {
-            targetStep = -1; // Stop skipping
+            targetStep = -1;
         }
 
         this.currentStep++;
@@ -510,7 +481,7 @@ public class GameEngine {
         synchronized (this) {
             this.currentOptions = options;
             this.selectedOptionIndex = -1;
-            this.waitingForClick = false; // Disable normal click handling
+            this.waitingForClick = false;
             window.repaint();
 
             while (selectedOptionIndex == -1 && !scriptCancelled) {
@@ -521,7 +492,7 @@ public class GameEngine {
                     if (scriptCancelled) {
                         throw new RuntimeException("Script cancelled");
                     }
-                    return 0; // fallback
+                    return 0;
                 }
             }
             if (scriptCancelled) {
@@ -540,7 +511,7 @@ public class GameEngine {
         }
     }
 
-    // --- Window Manipulation (Meta Features) ---
+    // Window manipulation (meta features)
 
     public void setWindowPosition(int x, int y) {
         if (isSkipping())
@@ -576,9 +547,8 @@ public class GameEngine {
 
     public void shakeWindow(int intensity, int durationMs) {
         if (isSkipping())
-            return; // Don't shake during load
+            return;
 
-        // Cancel any existing window animation
         if (windowAnimation != null && windowAnimation.isAlive()) {
             windowAnimation.interrupt();
         }
@@ -597,7 +567,7 @@ public class GameEngine {
                     Thread.sleep(30);
                 } catch (InterruptedException e) {
                     SwingUtilities.invokeLater(() -> window.setLocation(original));
-                    return; // Exit animation if interrupted
+                    return;
                 }
             }
             if (!Thread.currentThread().isInterrupted()) {
@@ -617,7 +587,6 @@ public class GameEngine {
             return;
         }
 
-        // Cancel any existing window animation
         if (windowAnimation != null && windowAnimation.isAlive()) {
             windowAnimation.interrupt();
         }
@@ -642,7 +611,7 @@ public class GameEngine {
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
-                    return; // Exit animation if interrupted
+                    return;
                 }
             }
             if (!Thread.currentThread().isInterrupted()) {
@@ -652,7 +621,7 @@ public class GameEngine {
         windowAnimation.start();
     }
 
-    // --- Entity Animation ---
+    // Character animation
 
     public void slideCharacter(String name, int targetX, int targetY, int durationMs, com.vnengine.util.Easing easing) {
         if (!visibleCharacters.containsKey(name))
@@ -660,11 +629,10 @@ public class GameEngine {
 
         if (isSkipping()) {
             characterPositions.put(name, new Point(targetX, targetY));
-            // No repaint needed here strictly as load loop is fast, but harmless
+
             return;
         }
 
-        // Cancel any existing animation for this character
         Thread existingAnim = characterAnimations.get(name);
         if (existingAnim != null && existingAnim.isAlive()) {
             existingAnim.interrupt();
@@ -673,7 +641,7 @@ public class GameEngine {
         Thread animThread = new Thread(() -> {
             Point start = characterPositions.getOrDefault(name, new Point(0, 0));
             if (!characterPositions.containsKey(name)) {
-                characterPositions.put(name, new Point(targetX, targetY)); // Snap if unknown
+                characterPositions.put(name, new Point(targetX, targetY));
                 window.repaint();
                 return;
             }
@@ -697,7 +665,7 @@ public class GameEngine {
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
-                    return; // Exit animation if interrupted
+                    return;
                 }
             }
             if (!Thread.currentThread().isInterrupted()) {
@@ -715,14 +683,12 @@ public class GameEngine {
             return;
         }
 
-        // Cancel any existing dialog animation
         if (dialogAnimation != null && dialogAnimation.isAlive()) {
             dialogAnimation.interrupt();
         }
 
         dialogAnimation = new Thread(() -> {
-            Point start = customDialogPosition != null ? customDialogPosition : new Point(20, 500); // Default guess for
-                                                                                                    // now
+            Point start = customDialogPosition != null ? customDialogPosition : new Point(20, 500);
             long startTime = System.currentTimeMillis();
 
             while (!Thread.currentThread().isInterrupted()) {
@@ -741,7 +707,7 @@ public class GameEngine {
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
-                    return; // Exit animation if interrupted
+                    return;
                 }
             }
             if (!Thread.currentThread().isInterrupted()) {
@@ -817,7 +783,7 @@ public class GameEngine {
         windowResizeAnimation.start();
     }
 
-    // --- Website Opener ---
+    // Website opener
     public void openWebsite(String urlString) {
         if (isSkipping())
             return;
@@ -834,6 +800,26 @@ public class GameEngine {
             System.err.println("Error opening website: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    // Desktop wallpaper (meta feature)
+    public String getDesktopWallpaper() {
+        return WallpaperManager.getCurrentWallpaper();
+    }
+
+    public void setDesktopWallpaper(String imagePath) {
+        if (isSkipping())
+            return;
+
+        WallpaperManager.saveCurrentWallpaper();
+        WallpaperManager.setWallpaper(imagePath);
+    }
+
+    public void restoreDesktopWallpaper() {
+        if (isSkipping())
+            return;
+
+        WallpaperManager.restoreWallpaper();
     }
 
     public void scaleCharacter(String name, double targetScale, int durationMs, com.vnengine.util.Easing easing) {
@@ -882,7 +868,7 @@ public class GameEngine {
         animThread.start();
     }
 
-    // --- Main Menu System ---
+    // Main menu system
     private boolean isMainMenu = false;
     private Runnable startGameCallback;
 
@@ -890,7 +876,6 @@ public class GameEngine {
         this.startGameCallback = onStart;
         this.isMainMenu = true;
 
-        // Reset state for main menu
         this.currentBackground = null;
         this.visibleCharacters.clear();
         this.characterPositions.clear();
@@ -898,10 +883,6 @@ public class GameEngine {
         this.currentDialogue = null;
         this.currentSpeaker = null;
 
-        // Optionally set a default background for the menu if desired
-        // this.currentBackground = "menu_bg";
-
-        // Start main menu music
         playMusic("Enjoy", true);
 
         window.repaint();
@@ -919,7 +900,7 @@ public class GameEngine {
         }
     }
 
-    // --- Sub-Window System (Meta Features) ---
+    // Sub-window system (meta feature)
 
     public void createSubWindow(String id, String title, int width, int height) {
         if (isSkipping())

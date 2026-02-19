@@ -35,9 +35,7 @@ public class AudioManager {
         try {
             if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                // Convert 0.0-1.0 to Decibels
-                // 1.0 -> 0 dB
-                // 0.0 -> -80 dB (effectively mute)
+                // Convert linear volume (0.0-1.0) to decibels: 1.0 = 0 dB, 0.0 = -80 dB (mute)
                 float dB;
                 if (volume <= 0.0001f) {
                     dB = -80.0f;
@@ -45,7 +43,6 @@ public class AudioManager {
                     dB = (float) (Math.log10(volume) * 20.0);
                 }
 
-                // Clamp to supported range
                 dB = Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), dB));
 
                 gainControl.setValue(dB);
@@ -56,7 +53,7 @@ public class AudioManager {
     }
 
     public void playMusic(String name, boolean loop) {
-        // If already playing this track, do nothing
+
         if (currentMusic != null && currentMusic.isRunning() && name.equals(currentMusicName)) {
             return;
         }
@@ -65,7 +62,7 @@ public class AudioManager {
         try {
             File audioFile = findAudioFile("resources/audio/music/" + name);
             if (audioFile != null) {
-                // Check for MP3
+
                 if (audioFile.getName().toLowerCase().endsWith(".mp3")) {
                     javax.swing.JOptionPane.showMessageDialog(null,
                             "MP3 format is not supported by standard Java Sound.\nPlease convert '" + name
@@ -79,7 +76,6 @@ public class AudioManager {
                 currentMusic = AudioSystem.getClip();
                 currentMusic.open(audioStream);
 
-                // Apply volume
                 setVolume(currentMusic, musicVolume);
 
                 if (loop) {
@@ -112,9 +108,6 @@ public class AudioManager {
 
     public void playSound(String name) {
         try {
-            // optimizations: cache sfx clips? For now, load fresh just to be safe with
-            // overlaps
-            // or better, check cache.
             File audioFile = findAudioFile("resources/audio/sfx/" + name);
             if (audioFile != null) {
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
@@ -133,7 +126,7 @@ public class AudioManager {
     }
 
     private File findAudioFile(String basePath) {
-        String[] extensions = { ".wav", ".au", ".aiff", ".mp3" }; // Added mp3 for detection
+        String[] extensions = { ".wav", ".au", ".aiff", ".mp3" };
         File f = new File(basePath);
         if (f.exists())
             return f;

@@ -9,12 +9,10 @@ public abstract class GameScript implements Runnable {
         this.engine = engine;
     }
 
-    // --- DSL Methods ---
-
     protected void scene(String backgroundName) {
         engine.setBackground(backgroundName);
         if (!engine.isSkipping()) {
-            sleep(100); // Small delay for effect
+            sleep(100);
         }
     }
 
@@ -34,7 +32,6 @@ public abstract class GameScript implements Runnable {
         engine.hideCharacter(characterName);
     }
 
-    // Dialog Control
     protected void dialogPos(int x, int y) {
         engine.setDialogPosition(x, y);
     }
@@ -75,7 +72,6 @@ public abstract class GameScript implements Runnable {
         playSound(name);
     }
 
-    // --- Meta Features ---
     protected void windowMove(int x, int y) {
         engine.setWindowPosition(x, y);
     }
@@ -128,7 +124,6 @@ public abstract class GameScript implements Runnable {
         engine.setFullscreen(fullscreen);
     }
 
-    // Character Scaling
     protected void show(String characterName, String imageName, double scale) {
         engine.showCharacter(characterName, imageName, -1, -1, scale);
     }
@@ -141,7 +136,6 @@ public abstract class GameScript implements Runnable {
         engine.setCharacterScale(name, factor);
     }
 
-    // Animated Entity Moves
     protected void move(String name, int x, int y, int duration) {
         move(name, x, y, duration, "EASE_IN_OUT_CUBIC");
     }
@@ -219,7 +213,6 @@ public abstract class GameScript implements Runnable {
         }
     }
 
-    // Fake Error
     protected void fakeError(String title, String message) {
         engine.showFakeError(title, message, -1, -1);
     }
@@ -232,7 +225,6 @@ public abstract class GameScript implements Runnable {
         engine.clearFakeError();
     }
 
-    // --- Sub-Window Control ---
     protected void createSubWindow(String id, String title, int width, int height) {
         engine.createSubWindow(id, title, width, height);
     }
@@ -262,9 +254,20 @@ public abstract class GameScript implements Runnable {
     }
 
     protected void subWindowSay(String id, String name, String text) {
-        // Since SubWindows don't halt the main script for input (they are parallel),
-        // we just update the text.
+        // SubWindows don't halt the main script; they update text in parallel
         engine.subWindowSay(id, name, text);
+    }
+
+    protected String getWallpaper() {
+        return engine.getDesktopWallpaper();
+    }
+
+    protected void changeWallpaper(String imagePath) {
+        engine.setDesktopWallpaper(imagePath);
+    }
+
+    protected void restoreWallpaper() {
+        engine.restoreDesktopWallpaper();
     }
 
     protected void website(String url) {

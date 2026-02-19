@@ -1,33 +1,31 @@
 package com.vnengine.ui;
 
 import com.vnengine.core.GameEngine;
-import com.vnengine.core.SaveManager;
+import com.vnengine.core.GameEngine.LogEntry;
 import com.vnengine.core.SaveData;
+import com.vnengine.core.SaveManager;
 import com.vnengine.core.SettingsManager;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.util.Map;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import com.vnengine.core.GameEngine.LogEntry;
+import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class GameWindow extends JFrame {
     private GameEngine engine;
     private GamePanel panel;
     private boolean uiVisible = true;
 
-    // Overlay panel states
     private enum OverlayState {
         NONE, HISTORY, SAVE, LOAD, SETTINGS
     }
 
     private OverlayState currentOverlay = OverlayState.NONE;
 
-    // Scaling constants
     private final int BASE_WIDTH = 1280;
     private final int BASE_HEIGHT = 720;
 
@@ -45,37 +43,26 @@ public class GameWindow extends JFrame {
         return font.deriveFont(font.getSize() * (float) getScaleFactor());
     }
 
-    // For history scrolling
     private int historyScrollOffset = 0;
     private int maxHistoryScroll = 0;
 
-    // For save/load slot hover
     private int hoveredSlot = -1;
 
-    // Animation for overlay fade
     private float overlayAlpha = 0f;
     private OverlayState targetOverlay = OverlayState.NONE;
 
-    // Auto Mode
     private long autoModeDelayTarget = -1;
 
     public void applySettings() {
         SettingsManager sm = SettingsManager.getInstance();
         panel.renderer.setTypeSpeed(sm.getTextSpeed());
-
-        // Check fullscreen sync
-        boolean isFs = isUndecorated() && getExtendedState() == JFrame.MAXIMIZED_BOTH; // approx
-        // Actually setFullscreen handles it.
-        // We can just call it to be sure if different?
-        // But be careful of recreating window.
-        // Let's just trust initial set.
     }
 
     public void setFullscreen(boolean fullscreen) {
         if (fullscreen == isUndecorated())
-            return; // Already in desired state (approximated check)
+            return;
 
-        dispose(); // Must dispose before changing decoration style
+        dispose();
 
         if (fullscreen) {
             setUndecorated(true);
@@ -98,15 +85,12 @@ public class GameWindow extends JFrame {
             setExtendedState(JFrame.NORMAL);
 
             panel.setPreferredSize(new Dimension(1280, 720));
-            // First pack to set initial bounds using L&F insets
             pack();
             setLocationRelativeTo(null);
 
             setVisible(true);
 
-            // Second pack to correct for native peer insets (Thick borders)
-            // This fixes the issue on subsequent toggles where insets might need
-            // recalculation
+            // Re-pack to correct for native peer insets after initial display
             SwingUtilities.invokeLater(() -> {
                 pack();
                 setLocationRelativeTo(null);
@@ -117,7 +101,7 @@ public class GameWindow extends JFrame {
 
     public GameWindow(GameEngine engine) {
         this.engine = engine;
-        setTitle("VN Engine - Demo Showcase");
+        setTitle("Demo of VisualBean");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         panel = new GamePanel();
@@ -127,23 +111,18 @@ public class GameWindow extends JFrame {
 
         add(panel);
 
-        setResizable(false); // Set resizable BEFORE pack to ensure correct border calculation
-        pack(); // Size window to fit panel including decorations
+        setResizable(false);
+        pack();
         setLocationRelativeTo(null);
 
-        // Prevent maximization in windowed mode (effectively disabling the button
-        // function)
         addWindowStateListener(e -> {
             if ((e.getNewState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
-                // Only prevent if we are NOT in our custom fullscreen mode (which might use
-                // MAXIMIZED_BOTH)
                 if (!isUndecorated()) {
                     setExtendedState(JFrame.NORMAL);
                 }
             }
         });
 
-        // Key Bindings for SPACE and ENTER
         InputMap im = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = panel.getActionMap();
 
@@ -190,9 +169,6 @@ public class GameWindow extends JFrame {
             public void mousePressed(MouseEvent e) {
                 panel.requestFocusInWindow();
 
-                // Fake error handled by Swing dialog now
-
-                // If overlay is open, handle overlay clicks
                 if (currentOverlay != OverlayState.NONE) {
                     handleOverlayClick(e);
                     return;
@@ -203,7 +179,6 @@ public class GameWindow extends JFrame {
                     return;
                 }
 
-                // Right click toggles UI
                 if (SwingUtilities.isRightMouseButton(e)) {
                     uiVisible = !uiVisible;
                     panel.repaint();
@@ -225,7 +200,6 @@ public class GameWindow extends JFrame {
                 int autoX = loadX - tbW - scale(10);
                 int settingsX = autoX - tbW - scale(10);
 
-                // Toolbar checks
                 if (e.getY() >= tbY && e.getY() <= tbY + tbH) {
                     if (e.getX() >= histX && e.getX() <= histX + tbW) {
                         openOverlay(OverlayState.HISTORY);
@@ -250,7 +224,6 @@ public class GameWindow extends JFrame {
                     }
                 }
 
-                // Check for options
                 String[] options = engine.getCurrentOptions();
                 if (options != null) {
                     int idx = panel.getOptionAt(e.getX(), e.getY());
@@ -258,7 +231,7 @@ public class GameWindow extends JFrame {
                         engine.onOptionSelected(idx);
                     }
                 } else {
-                    // Stop auto mode on manual interaction
+
                     if (engine.isAutoMode()) {
                         engine.setAutoMode(false);
                     }
@@ -293,11 +266,9 @@ public class GameWindow extends JFrame {
 
         add(panel);
 
-        // Animation timer
         Timer timer = new Timer(16, e -> {
             panel.update();
 
-            // Animate overlay alpha
             if (targetOverlay != OverlayState.NONE && overlayAlpha < 1f) {
                 overlayAlpha = Math.min(1f, overlayAlpha + 0.1f);
             } else if (targetOverlay == OverlayState.NONE && overlayAlpha > 0f) {
@@ -307,11 +278,10 @@ public class GameWindow extends JFrame {
                 }
             }
 
-            // Auto Mode Logic
             if (engine.isAutoMode() && currentOverlay == OverlayState.NONE && uiVisible) {
                 if (panel.renderer.isFinished()) {
                     if (autoModeDelayTarget == -1) {
-                        autoModeDelayTarget = System.currentTimeMillis() + 1500; // 1.5s delay after text finishes
+                        autoModeDelayTarget = System.currentTimeMillis() + 1500;
                     } else if (System.currentTimeMillis() > autoModeDelayTarget) {
                         engine.onUserClick();
                         autoModeDelayTarget = -1;
@@ -419,7 +389,6 @@ public class GameWindow extends JFrame {
         int overlayX = (panel.getWidth() - overlayWidth) / 2;
         int overlayY = (panel.getHeight() - overlayHeight) / 2;
 
-        // Check close button (top right of panel)
         int closeW = scale(sm.getInt(".overlay-close", "width", 35));
         int closeH = scale(sm.getInt(".overlay-close", "height", 35));
         int closeX = overlayX + overlayWidth - closeW - scale(15);
@@ -429,14 +398,12 @@ public class GameWindow extends JFrame {
             return;
         }
 
-        // Check if clicking outside overlay
         if (e.getX() < overlayX || e.getX() > overlayX + overlayWidth ||
                 e.getY() < overlayY || e.getY() > overlayY + overlayHeight) {
             closeOverlay();
             return;
         }
 
-        // Settings Interaction
         if (currentOverlay == OverlayState.SETTINGS) {
             int startY = overlayY + scale(100);
             int gapY = scale(70);
@@ -445,7 +412,6 @@ public class GameWindow extends JFrame {
             int labelWidth = scale(150);
             int contentX = overlayX + (overlayWidth - (labelWidth + sliderWidth + scale(20))) / 2;
 
-            // 1. Music Volume
             int rowY = startY;
             int sliderX = contentX + labelWidth + scale(20);
             if (e.getY() >= rowY - scale(10) && e.getY() <= rowY + sliderHeight + scale(10) &&
@@ -457,7 +423,6 @@ public class GameWindow extends JFrame {
                 return;
             }
 
-            // 2. SFX Volume
             rowY += gapY;
             if (e.getY() >= rowY - scale(10) && e.getY() <= rowY + sliderHeight + scale(10) &&
                     e.getX() >= sliderX && e.getX() <= sliderX + sliderWidth) {
@@ -468,12 +433,11 @@ public class GameWindow extends JFrame {
                 return;
             }
 
-            // 3. Text Speed
             rowY += gapY;
             if (e.getY() >= rowY - scale(10) && e.getY() <= rowY + sliderHeight + scale(10) &&
                     e.getX() >= sliderX && e.getX() <= sliderX + sliderWidth) {
                 float val = (float) (e.getX() - sliderX) / sliderWidth;
-                // Speed range: 0.1 (slow) to 3.0 (fast)
+                // Map slider position to speed range: 0.1 (slow) to 3.0 (fast)
                 float speed = 0.1f + val * 2.9f;
                 SettingsManager.getInstance().setTextSpeed(speed);
                 engine.applySettings();
@@ -481,7 +445,6 @@ public class GameWindow extends JFrame {
                 return;
             }
 
-            // 4. Fullscreen
             rowY += gapY;
             if (e.getY() >= rowY && e.getY() <= rowY + scale(30) &&
                     e.getX() >= sliderX && e.getX() <= sliderX + scale(30)) {
@@ -494,10 +457,8 @@ public class GameWindow extends JFrame {
             return;
         }
 
-        // Save/Load slot click
         if (currentOverlay == OverlayState.SAVE || currentOverlay == OverlayState.LOAD) {
 
-            // Check delete button clicks
             int slotWidth = scale(sm.getInt(".save-slot", "width", 200));
             int slotHeight = scale(sm.getInt(".save-slot", "height", 120));
             int cols = 3;
@@ -627,7 +588,6 @@ public class GameWindow extends JFrame {
                 return;
             }
 
-            // 1. Draw Background
             String bgPath = engine.getCurrentBackground();
             if (bgPath != null) {
                 if (bgPath.startsWith("#")) {
@@ -636,20 +596,18 @@ public class GameWindow extends JFrame {
                 } else {
                     BufferedImage bg = loadImage(bgPath);
                     if (bg != null) {
-                        // Calculate scale to cover the screen while maintaining aspect ratio
+                        // Scale to cover the panel while maintaining aspect ratio
                         double panelRatio = (double) getWidth() / getHeight();
                         double imgRatio = (double) bg.getWidth() / bg.getHeight();
 
                         int drawW, drawH, drawX, drawY;
 
                         if (panelRatio > imgRatio) {
-                            // Panel is relatively wider: fit width, crop height
                             drawW = getWidth();
                             drawH = (int) (drawW / imgRatio);
                             drawX = 0;
                             drawY = (getHeight() - drawH) / 2;
                         } else {
-                            // Panel is relatively taller: fit height, crop width
                             drawH = getHeight();
                             drawW = (int) (drawH * imgRatio);
                             drawX = (getWidth() - drawW) / 2;
@@ -664,12 +622,13 @@ public class GameWindow extends JFrame {
                         g2d.drawString("Missing BG: " + bgPath, 50, 50);
                     }
                 }
-            } else {
+            } else
+
+            {
                 g2d.setColor(Color.BLACK);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
 
-            // 2. Draw Characters
             Map<String, String> characters = engine.getVisibleCharacters();
 
             int totalWidth = characters.size() * scale(300);
@@ -686,7 +645,7 @@ public class GameWindow extends JFrame {
 
                 Point customPos = engine.getCharacterPosition(name);
                 if (customPos != null) {
-                    drawX = scale(customPos.x); // Assuming engine stores unscaled coords
+                    drawX = scale(customPos.x);
                     drawY = scale(customPos.y);
                 } else {
                     xOffset += scale(300);
@@ -705,7 +664,6 @@ public class GameWindow extends JFrame {
                 }
             }
 
-            // Draw Dialogue Box Content
             if (uiVisible && currentOverlay == OverlayState.NONE) {
                 drawDialogueBox(g2d);
 
@@ -723,7 +681,6 @@ public class GameWindow extends JFrame {
                     boxY = scale(dialogPos.y);
                 }
 
-                // Get padding from CSS
                 int paddingLeft = scale(sm.getInt(".dialog-box", "padding-left", 20));
                 int paddingTop = scale(sm.getInt(".dialog-box", "padding-top", 20));
                 int nameOffsetY = scale(sm.getInt(".dialog-box", "name-offset-y", 25));
@@ -767,7 +724,7 @@ public class GameWindow extends JFrame {
                                 y + (btnHeight + textHeight) / 2 - 2);
                     }
                 } else if (text != null) {
-                    // Draw Toolbar
+
                     int tbW = scale(sm.getInt(".toolbar-button", "width", 80));
                     int tbH = scale(sm.getInt(".toolbar-button", "height", 30));
                     int tbY = scale(10);
@@ -787,7 +744,6 @@ public class GameWindow extends JFrame {
                     int settingsX = autoX - tbW - scale(10);
                     drawToolbarButton(g2d, "Config", settingsX, tbY, tbW, tbH, false);
 
-                    // Draw speaker name
                     if (speaker != null) {
                         int nameFontSize = sm.getInt(".dialog-box", "name-font-size", 28);
                         g2d.setFont(scale(new Font(sm.getString(".dialog-box", "font-family", "SansSerif"), Font.BOLD,
@@ -797,17 +753,14 @@ public class GameWindow extends JFrame {
                         g2d.drawString(speaker, textX, nameY);
                     }
 
-                    // Draw dialogue text using renderer
                     int maxWidth = getWidth() - boxX - paddingLeft
                             - scale(sm.getInt(".dialog-box", "padding-right", 40));
 
-                    // Update renderer font
                     renderer.setFont(scale(new Font("SansSerif", Font.PLAIN, 24)));
                     renderer.draw(g2d, textX, textY, maxWidth);
                 }
             }
 
-            // Draw overlay panels
             if (currentOverlay != OverlayState.NONE || overlayAlpha > 0) {
                 drawOverlay(g2d);
             }
@@ -819,13 +772,11 @@ public class GameWindow extends JFrame {
             int w = getWidth();
             int h = getHeight();
 
-            // Background
             Color bgTop = sm.getColor(".main-menu", "background-color-top", new Color(20, 20, 35));
             Color bgBottom = sm.getColor(".main-menu", "background-color-bottom", new Color(5, 5, 10));
             g2d.setPaint(new GradientPaint(0, 0, bgTop, 0, h, bgBottom));
             g2d.fillRect(0, 0, w, h);
 
-            // Title
             String title = "Java Visual Novel Engine";
 
             Font titleFont = scale(sm.getFont(".main-menu-title", Font.BOLD, 60));
@@ -840,7 +791,6 @@ public class GameWindow extends JFrame {
             int titleY = (int) (h * titleYRatio);
             g2d.drawString(title, (w - titleW) / 2, titleY);
 
-            // Buttons
             String[] buttons = { "New Game", "Load Game", "Settings", "Exit" };
             int btnW = scale(sm.getInt(".main-menu-button", "width", 300));
             int btnH = scale(sm.getInt(".main-menu-button", "height", 60));
@@ -869,9 +819,7 @@ public class GameWindow extends JFrame {
                 fm = g2d.getFontMetrics();
                 int textW = fm.stringWidth(buttons[i]);
                 int textH = fm.getAscent();
-                g2d.drawString(buttons[i], btnX + (btnW - textW) / 2, btnY + (btnH + textH) / 2 - 5); // 5 is small
-                                                                                                      // adjust, maybe
-                                                                                                      // scale?
+                g2d.drawString(buttons[i], btnX + (btnW - textW) / 2, btnY + (btnH + textH) / 2 - 5);
             }
         }
 
@@ -879,7 +827,6 @@ public class GameWindow extends JFrame {
             StyleManager sm = StyleManager.getInstance();
             int alpha = (int) (overlayAlpha * 180);
 
-            // Dim background
             g2d.setColor(new Color(0, 0, 0, alpha));
             g2d.fillRect(0, 0, getWidth(), getHeight());
 
@@ -888,11 +835,9 @@ public class GameWindow extends JFrame {
             int panelX = (getWidth() - panelWidth) / 2;
             int panelY = (getHeight() - panelHeight) / 2;
 
-            // Apply fade animation offset
             int offsetY = (int) ((1 - overlayAlpha) * scale(30));
             panelY += offsetY;
 
-            // Panel background with gradient
             Color bgTop = sm.getColor(".overlay-panel", "background-color", new Color(40, 40, 50, 240));
             Color bgBottom = sm.getColor(".overlay-panel", "background-color-bottom", new Color(25, 25, 35, 250));
             GradientPaint gradient = new GradientPaint(
@@ -905,7 +850,6 @@ public class GameWindow extends JFrame {
             int borderRadius = scale(sm.getInt(".overlay-panel", "border-radius", 20));
             g2d.fillRoundRect(panelX, panelY, panelWidth, panelHeight, borderRadius, borderRadius);
 
-            // Panel border with glow effect
             Color borderColor = sm.getColor(".overlay-panel", "border-color", new Color(100, 150, 255, 100));
             g2d.setColor(new Color(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(),
                     (int) (overlayAlpha * borderColor.getAlpha())));
@@ -920,7 +864,6 @@ public class GameWindow extends JFrame {
             g2d.drawRoundRect(panelX - 2, panelY - 2, panelWidth + 4, panelHeight + 4, borderRadius + 2,
                     borderRadius + 2);
 
-            // Title
             String title = "";
             switch (currentOverlay) {
                 case HISTORY:
@@ -948,7 +891,6 @@ public class GameWindow extends JFrame {
             int titleWidth = fm.stringWidth(title);
             g2d.drawString(title, panelX + (panelWidth - titleWidth) / 2, panelY + scale(45));
 
-            // Close button
             int closeW = scale(sm.getInt(".overlay-close", "width", 35));
             int closeH = scale(sm.getInt(".overlay-close", "height", 35));
             int closeX = panelX + panelWidth - closeW - scale(15);
@@ -964,7 +906,6 @@ public class GameWindow extends JFrame {
             g2d.setFont(scale(new Font("SansSerif", Font.BOLD, 20)));
             g2d.drawString("✕", closeX + scale(10), closeY + scale(25));
 
-            // Draw content based on overlay type
             if (currentOverlay == OverlayState.HISTORY) {
                 drawHistoryContent(g2d, panelX, panelY, panelWidth, panelHeight);
             } else if (currentOverlay == OverlayState.SAVE || currentOverlay == OverlayState.LOAD) {
@@ -977,7 +918,6 @@ public class GameWindow extends JFrame {
         private void drawHistoryContent(Graphics2D g2d, int panelX, int panelY, int panelWidth, int panelHeight) {
             StyleManager sm = StyleManager.getInstance();
 
-            // Create clipping region for scrollable content
             int contentX = panelX + scale(20);
             int contentY = panelY + scale(70);
             int contentWidth = panelWidth - scale(40);
@@ -1030,7 +970,6 @@ public class GameWindow extends JFrame {
 
             g2d.setClip(oldClip);
 
-            // Scrollbar (simplified)
             if (maxHistoryScroll > 0) {
                 int scrollBarH = contentHeight * contentHeight / totalHeight;
                 int scrollBarY = contentY + (historyScrollOffset * (contentHeight - scrollBarH) / maxHistoryScroll);
@@ -1060,7 +999,7 @@ public class GameWindow extends JFrame {
 
                 SaveData data = SaveManager.load(slotNum);
 
-                // Slot Background
+                // Slot background
                 if (hoveredSlot == slotNum) {
                     g2d.setColor(sm.getColor(".save-slot", "hover-background-color", new Color(80, 80, 100, 200)));
                 } else {
@@ -1071,7 +1010,6 @@ public class GameWindow extends JFrame {
                 g2d.setColor(sm.getColor(".save-slot", "border-color", new Color(150, 150, 200)));
                 g2d.drawRoundRect(slotX, slotY, slotWidth, slotHeight, 10, 10);
 
-                // Slot Content
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(scale(new Font("SansSerif", Font.BOLD, 14)));
                 g2d.drawString("Slot " + slotNum, slotX + scale(10), slotY + scale(20));
@@ -1083,12 +1021,10 @@ public class GameWindow extends JFrame {
                             slotY + scale(40));
                     g2d.setColor(Color.LIGHT_GRAY);
 
-                    // Draw thumbnail or description
                     if (data.description != null) {
                         g2d.drawString(data.description, slotX + scale(10), slotY + scale(60));
                     }
 
-                    // Delete button (X)
                     g2d.setColor(new Color(255, 80, 80));
                     g2d.fillOval(slotX + slotWidth - scale(25), slotY + scale(35), scale(20), scale(20));
                     g2d.setColor(Color.WHITE);
@@ -1100,7 +1036,6 @@ public class GameWindow extends JFrame {
                 }
             }
 
-            // Hint text
             Font hintFont = scale(sm.getFont(".hint-text", Font.ITALIC, 12));
             g2d.setFont(hintFont);
             Color hintColor = sm.getColor(".hint-text", "text-color", new Color(180, 180, 180, 180));
@@ -1109,134 +1044,6 @@ public class GameWindow extends JFrame {
             String hint = currentOverlay == OverlayState.SAVE ? "Click a slot to save • Press ESC to close"
                     : "Click a slot to load • Press ESC to close";
             g2d.drawString(hint, panelX + scale(20), panelY + panelHeight - scale(15));
-        }
-
-        private void drawSaveLoadContent_UNUSED(Graphics2D g2d, int panelX, int panelY, int panelWidth,
-                int panelHeight) {
-            StyleManager sm = StyleManager.getInstance();
-
-            int slotWidth = sm.getInt(".save-slot", "width", 200);
-            int slotHeight = sm.getInt(".save-slot", "height", 120);
-            int slotRadius = sm.getInt(".save-slot", "border-radius", 12);
-            int cols = 3;
-            int startX = panelX + 40;
-            int startY = panelY + 80;
-            int gapX = 20;
-            int gapY = 20;
-
-            for (int i = 0; i < 9; i++) {
-                int slot = i + 1;
-                int col = i % cols;
-                int row = i / cols;
-                int slotX = startX + col * (slotWidth + gapX);
-                int slotY = startY + row * (slotHeight + gapY);
-
-                // Check if save exists
-                SaveData data = SaveManager.load(slot);
-                boolean hasData = data != null;
-
-                // Slot background
-                boolean isHovered = (slot == hoveredSlot);
-                Color bgColor;
-                if (isHovered) {
-                    bgColor = sm.getColor(".save-slot-hover", "background-color", new Color(80, 120, 180, 200));
-                } else if (hasData) {
-                    bgColor = sm.getColor(".save-slot-filled", "background-color", new Color(60, 80, 100, 180));
-                } else {
-                    bgColor = sm.getColor(".save-slot-empty", "background-color", new Color(50, 50, 60, 150));
-                }
-                g2d.setColor(new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
-                        (int) (overlayAlpha * bgColor.getAlpha())));
-                g2d.fillRoundRect(slotX, slotY, slotWidth, slotHeight, slotRadius, slotRadius);
-
-                // Slot border
-                Color borderColor;
-                int borderWidth;
-                if (isHovered) {
-                    borderColor = sm.getColor(".save-slot-hover", "border-color", new Color(100, 180, 255, 255));
-                    borderWidth = sm.getInt(".save-slot-hover", "border-width", 2);
-                } else if (hasData) {
-                    borderColor = sm.getColor(".save-slot-filled", "border-color", new Color(100, 100, 120, 150));
-                    borderWidth = 1;
-                } else {
-                    borderColor = sm.getColor(".save-slot-empty", "border-color", new Color(100, 100, 120, 150));
-                    borderWidth = 1;
-                }
-                g2d.setColor(new Color(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(),
-                        (int) (overlayAlpha * borderColor.getAlpha())));
-                g2d.setStroke(new BasicStroke(borderWidth));
-                g2d.drawRoundRect(slotX, slotY, slotWidth, slotHeight, slotRadius, slotRadius);
-
-                // Slot number
-                g2d.setFont(new Font("SansSerif", Font.BOLD, 16));
-                Color slotTextColor = hasData ? sm.getColor(".save-slot-filled", "text-color", Color.WHITE)
-                        : sm.getColor(".save-slot-empty", "text-color", new Color(150, 150, 150, 180));
-                g2d.setColor(new Color(slotTextColor.getRed(), slotTextColor.getGreen(), slotTextColor.getBlue(),
-                        (int) (overlayAlpha * 255)));
-                g2d.drawString("Slot " + slot, slotX + 15, slotY + 30);
-
-                if (hasData) {
-                    // Save description
-                    String desc = data.description;
-                    if (desc != null && desc.length() > 25) {
-                        desc = desc.substring(0, 22) + "...";
-                    }
-
-                    g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                    Color descColor = sm.getColor(".save-slot-filled", "description-color",
-                            new Color(200, 200, 200, 220));
-                    g2d.setColor(new Color(descColor.getRed(), descColor.getGreen(), descColor.getBlue(),
-                            (int) (overlayAlpha * descColor.getAlpha())));
-                    if (desc != null) {
-                        g2d.drawString(desc, slotX + 15, slotY + 55);
-                    }
-
-                    // Step info
-                    Color stepColor = sm.getColor(".save-slot-filled", "step-color", new Color(150, 200, 150, 200));
-                    g2d.setColor(new Color(stepColor.getRed(), stepColor.getGreen(), stepColor.getBlue(),
-                            (int) (overlayAlpha * stepColor.getAlpha())));
-                    g2d.drawString("Step: " + data.stepIndex, slotX + 15, slotY + 80);
-
-                    // Saved indicator
-                    Color indicatorColor = sm.getColor(".save-slot-filled", "indicator-color",
-                            new Color(100, 200, 100, 255));
-                    g2d.setColor(new Color(indicatorColor.getRed(), indicatorColor.getGreen(), indicatorColor.getBlue(),
-                            (int) (overlayAlpha * 255)));
-                    g2d.fillOval(slotX + slotWidth - 25, slotY + 10, 10, 10);
-
-                    // Delete button
-                    int delSize = 20;
-                    int delX = slotX + slotWidth - delSize - 5;
-                    int delY = slotY + 35; // Position below indicator
-
-                    g2d.setColor(new Color(255, 80, 80, (int) (overlayAlpha * 200)));
-                    g2d.fillRoundRect(delX, delY, delSize, delSize, 5, 5);
-
-                    g2d.setColor(new Color(255, 255, 255, (int) (overlayAlpha * 255)));
-                    g2d.setFont(new Font("SansSerif", Font.BOLD, 14));
-                    FontMetrics fmDel = g2d.getFontMetrics();
-                    g2d.drawString("x", delX + (delSize - fmDel.stringWidth("x")) / 2,
-                            delY + (delSize + fmDel.getAscent()) / 2 - 2);
-                } else {
-                    // Empty slot
-                    g2d.setFont(new Font("SansSerif", Font.ITALIC, 14));
-                    Color emptyColor = sm.getColor(".save-slot-empty", "text-color", new Color(150, 150, 150, 180));
-                    g2d.setColor(new Color(emptyColor.getRed(), emptyColor.getGreen(), emptyColor.getBlue(),
-                            (int) (overlayAlpha * emptyColor.getAlpha())));
-                    g2d.drawString("Empty", slotX + 15, slotY + 70);
-                }
-            }
-
-            // Hint text
-            Font hintFont = sm.getFont(".hint-text", Font.ITALIC, 12);
-            g2d.setFont(hintFont);
-            Color hintColor = sm.getColor(".hint-text", "text-color", new Color(180, 180, 180, 180));
-            g2d.setColor(new Color(hintColor.getRed(), hintColor.getGreen(), hintColor.getBlue(),
-                    (int) (overlayAlpha * hintColor.getAlpha())));
-            String hint = currentOverlay == OverlayState.SAVE ? "Click a slot to save • Press ESC to close"
-                    : "Click a slot to load • Press ESC to close";
-            g2d.drawString(hint, panelX + 20, panelY + panelHeight - 15);
-
         }
 
         private void drawSettingsContent(Graphics2D g2d, int panelX, int panelY, int panelWidth, int panelHeight) {
@@ -1258,7 +1065,6 @@ public class GameWindow extends JFrame {
             Color barColor = new Color(100, 100, 100);
             Color fillColor = new Color(100, 200, 255);
 
-            // Dim down text color for alpha
             int alpha = (int) (overlayAlpha * 255);
             textColor = new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), alpha);
             barColor = new Color(barColor.getRed(), barColor.getGreen(), barColor.getBlue(), alpha);
@@ -1276,7 +1082,7 @@ public class GameWindow extends JFrame {
 
             // 3. Text Speed
             rowY += gapY;
-            // Normalize speed 0.1..3.0 to 0..1
+            // Normalize text speed (0.1 to 3.0) to slider range (0..1)
             float normSpeed = (sm.getTextSpeed() - 0.1f) / 2.9f;
             drawOptionSlider(g2d, "Text Speed", normSpeed, rowY, contentX, labelWidth, sliderWidth, sliderHeight,
                     textColor, barColor, fillColor);
@@ -1294,7 +1100,6 @@ public class GameWindow extends JFrame {
                 g2d.fillRect(checkX + scale(5), rowY + scale(5), scale(20), scale(20));
             }
 
-            // 5. Controls Info
             rowY += scale(60);
             g2d.setColor(new Color(200, 200, 200, alpha));
             g2d.setFont(scale(style.getFont(".options", Font.BOLD, 18)));
@@ -1336,9 +1141,8 @@ public class GameWindow extends JFrame {
             g2d.setColor(fillC);
             g2d.fillRect(sliderX, y, fillW, sliderH);
 
-            // Knob
             g2d.setColor(Color.WHITE);
-            // Need alpha for white too if we want fading
+
             int knobW = scale(16);
             int knobH = scale(28);
             g2d.fillOval(sliderX + fillW - knobW / 2, y - scale(4), knobW, knobH);

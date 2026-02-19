@@ -7,44 +7,31 @@ import com.vnengine.script.GameScript;
  */
 public class MyGame extends GameScript {
 
-    // Character name constant
     private static final String SAKURA = "Sakura";
 
     @Override
     public void run() {
-        // ========================================
-        // INTRO - Window and Title Setup
-        // ========================================
-        windowTitle("VN Engine - Demo Showcase");
 
-        // Start the background music
+        windowTitle("VisualBean - Demo Showcase");
+
         playMusic("Beautiful Day");
 
-        // Start with a dramatic window center
         windowCenter(800, "EASE_OUT_BOUNCE");
 
         narrator("Welcome to the Ultimate Visual Novel Engine Demo!");
         narrator("This demo will showcase all the amazing features available to you.");
         narrator("From character animations to multi-window tricks, we have it all!");
 
-        // ========================================
-        // SCENE SETUP
-        // ========================================
         scene("council");
 
-        // Show character off-screen first, then slide in
         show(SAKURA, "demo_girl_neutral", -400, 50, 0.8);
         move(SAKURA, 100, 50, 1000, "EASE_OUT_CUBIC");
 
         say(SAKURA, "Hello there! My name is Sakura, and I'll be your guide today!");
 
-        // Expression change to happy
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "I'm SO excited to show you everything this engine can do!");
 
-        // ========================================
-        // MAIN MENU LOOP
-        // ========================================
         boolean running = true;
         while (running) {
             resizeWindowCentered(1280, 720, 800, "EASE_IN_OUT_CUBIC");
@@ -72,14 +59,10 @@ public class MyGame extends GameScript {
         conclusion();
     }
 
-    // ========================================
-    // DEMO: Characters
-    // ========================================
     private void characterDemo() {
         show(SAKURA, "demo_girl_smug");
         say(SAKURA, "Let's start with the basics: Expressions and Movement!");
 
-        // Expressions
         narrator("Characters can have many expressions.");
 
         String[] expressions = {
@@ -97,7 +80,6 @@ public class MyGame extends GameScript {
 
         say(SAKURA, "And that's just a few of them!");
 
-        // Movement
         narrator("We can also move smoothly across the screen.");
         show(SAKURA, "demo_girl_happy");
 
@@ -107,7 +89,6 @@ public class MyGame extends GameScript {
         move(SAKURA, 100, 50, 800, "EASE_OUT_BOUNCE");
         say(SAKURA, "Bouncing back to the left!");
 
-        // Scaling
         narrator("And scaling!");
         scale(SAKURA, 1.2, 500, "EASE_OUT_ELASTIC");
         show(SAKURA, "demo_girl_surprised");
@@ -118,19 +99,14 @@ public class MyGame extends GameScript {
         say(SAKURA, "That's better.");
     }
 
-    // ========================================
-    // DEMO: Window & UI
-    // ========================================
     private void windowDemo() {
         show(SAKURA, "demo_girl_smug");
         say(SAKURA, "Now for the fun meta-magic!");
 
-        // Shake
         windowShake(10, 500);
         show(SAKURA, "demo_girl_surprised");
         say(SAKURA, "Earthquake! (That was a window shake)");
 
-        // Window Move
         say(SAKURA, "I can move the actual game window!");
         windowSlide(100, 100, 800, "EASE_IN_OUT_CUBIC");
         say(SAKURA, "Up here now!");
@@ -138,13 +114,16 @@ public class MyGame extends GameScript {
         windowCenter(800, "EASE_OUT_BOUNCE");
         say(SAKURA, "And back to center.");
 
-        // Resize
         say(SAKURA, "I can even change the window size dynamically.");
         resizeWindow(1280, 720, 800, "EASE_OUT_ELASTIC");
         say(SAKURA, "Widescreen!");
         resizeWindow(960, 600, 800, "EASE_IN_OUT_CUBIC");
 
-        // Dialog Box Animation
+        say(SAKURA, "Oh, and I can change the window title too!");
+        windowTitle("Hello from Sakura!");
+        say(SAKURA, "See? Check the title bar!");
+        windowTitle("VisualBean - Demo Showcase");
+
         narrator("The dialog box can also be animated.");
         dialogSlide(100, 100, 800, "EASE_OUT_CUBIC");
         say(SAKURA, "See? I'm floating up here!");
@@ -152,14 +131,10 @@ public class MyGame extends GameScript {
         say(SAKURA, "Back to normal.");
     }
 
-    // ========================================
-    // DEMO: Sub-Windows
-    // ========================================
     private void subWindowDemo() {
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "This is my favorite feature: Multi-Window support!");
 
-        // Create Sub Window
         String subID = "clone_win";
         createSubWindow(subID, "Sakura's Clone", 640, 360);
         subWindowPos(subID, 100, 100);
@@ -172,37 +147,29 @@ public class MyGame extends GameScript {
         subWindowSay(subID, "Clone", "Hi! I'm running in a separate window!");
         say(SAKURA, "She can talk, move, and emote independently.");
 
-        // Move character in subwindow
         moveInSubWindow(subID, "Clone", 300, 0);
         subWindowSay(subID, "Clone", "I'm moving inside my window!");
 
         showInSubWindow(subID, "Clone", "demo_girl_smug", 300, 0);
         say(SAKURA, "You can control as many of these as your PC can handle!");
 
-        // Close
         say(SAKURA, "Bye bye clone!");
         closeSubWindow(subID);
         say(SAKURA, "And she's gone.");
     }
 
-    // ========================================
-    // DEMO: System Features
-    // ========================================
     private void systemDemo() {
         show(SAKURA, "demo_girl_smile");
         say(SAKURA, "There are also powerful system features.");
 
-        // Native Error
         say(SAKURA, "For example, native system error popups.");
         fakeError("System Warning", "This is a native error popup triggered by the script!");
         say(SAKURA, "Did you see that popup? Useful for fourth-wall breaks!");
 
-        // Save/Load
         narrator("The engine supports a full Save/Load system.");
         narrator("You can save by pausing or using the menu features.");
         narrator("You can also delete saves if you make a mistake.");
 
-        // Website
         int webChoice = menu("Do you want to visit the engine website?", "Yes, open it!", "Maybe later.");
         if (webChoice == 0) {
             website("https://google.com");
@@ -211,36 +178,42 @@ public class MyGame extends GameScript {
             say(SAKURA, "No problem!");
         }
 
-        // Fullscreen
-        say(SAKURA, "Oh, and we support Fullscreen too!");
-        /*
-         * Note: Switching to fullscreen might change resolution,
-         * so we usually let the user do it via Settings, but we can force it.
-         * Uncomment below to test:
-         * windowFullscreen(true);
-         * say(SAKURA, "Now we are fullscreen!");
-         * windowFullscreen(false);
-         * say(SAKURA, "And back to windowed.");
-         */
+        show(SAKURA, "demo_girl_smug");
+        say(SAKURA, "Here's a fun one: I can change your desktop wallpaper!");
+
+        String currentWallpaper = getWallpaper();
+        if (currentWallpaper != null) {
+            say(SAKURA, "Your current wallpaper is: " + currentWallpaper);
+        } else {
+            say(SAKURA, "I couldn't detect your current wallpaper, but I can still try to change it!");
+        }
+
+        say(SAKURA, "Want me to change your wallpaper?");
+        int wpChoice = menu("Sure, go ahead!", "No way!");
+        if (wpChoice == 0) {
+            String bgPath = new java.io.File("resources/images/Windows10.png").getAbsolutePath();
+            changeWallpaper(bgPath);
+            show(SAKURA, "demo_girl_happy");
+            say(SAKURA, "Check your desktop! I changed your wallpaper!");
+            say(SAKURA, "Don't worry, I'll change it back now.");
+            restoreWallpaper();
+            say(SAKURA, "All restored! Your original wallpaper is back.");
+        } else {
+            show(SAKURA, "demo_girl_smile");
+            say(SAKURA, "That's fair! It is a pretty powerful trick though.");
+        }
     }
 
-    // ========================================
-    // DEMO: Kinetic Text Renderer
-    // ========================================
     private void kineticTextDemo() {
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "Finally, let's see the Kinetic Text Renderer in action!");
         say(SAKURA, "This allows for animated text effects like shaking, waving, and color changes!");
         say(SAKURA, "Here's an example of how it works:");
-        String kineticText = "This is [shake]shaking[/shake], this is [wave]waving[/wave], and this is [color=#ff0000]red text[/color]!";
-        say(SAKURA, kineticText);
+        say(SAKURA,
+                "This is [shake]shaking[/shake], this is [wave]waving[/wave], and this is [color=#ff0000]red text[/color]!");
         say(SAKURA, "You can combine these effects in any way you like!");
     }
 
-
-    // ========================================
-    // CONCLUSION
-    // ========================================
     private void conclusion() {
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "And that concludes our demo!");

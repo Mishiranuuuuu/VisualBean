@@ -13,7 +13,7 @@ public class SettingsManager {
 
     private float musicVolume = 0.8f;
     private float sfxVolume = 1.0f;
-    private float textSpeed = 0.5f; // 0.1 (slow) to 2.0 (fast)
+    private float textSpeed = 0.5f;
     private boolean fullscreen = false;
 
     private SettingsManager() {

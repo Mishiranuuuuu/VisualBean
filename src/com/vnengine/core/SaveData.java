@@ -10,16 +10,15 @@ public class SaveData implements Serializable {
     public String timestamp;
     public String snapshotText;
 
-    // Full State Snapshot
     public String currentBackground;
     public String currentMusic;
     public java.util.Map<String, String> visibleCharacters;
     public java.util.Map<String, java.awt.Point> characterPositions;
     public java.util.Map<String, Double> characterScales;
     public java.awt.Dimension windowSize;
-    public java.awt.Point windowPosition; // Window screen position
-    public String windowTitle; // Custom window title
-    public java.awt.Point dialogPosition; // Custom dialog box position
+    public java.awt.Point windowPosition;
+    public String windowTitle;
+    public java.awt.Point dialogPosition;
 
     public String description;
 
