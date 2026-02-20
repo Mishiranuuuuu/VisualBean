@@ -63,8 +63,9 @@ public class MyGame extends GameScript {
         
         show("Alice", "smile");
         say("Alice", "Hi! Welcome to VisualBean!");
-        
-        int choice = menu("Ready to start?", "Yes!", "Not yet.");
+
+        say("Alice", "Ready to start?");
+        int choice = menu("Yes!", "Not yet.");
         if (choice == 0) {
             say("Alice", "Great! Let's go!");
         }
