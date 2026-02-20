@@ -47,11 +47,23 @@ All methods below are available inside your `GameScript` class.
 *   **`menu(option1, option2, ...)`**: Displays a choice menu. Returns the index selected (0, 1, 2...).
 
 ```java
-int choice = menu("Do you like cats?", "Yes", "No");
+say("Alice", "Do you like cats?");
+int choice = menu("Yes", "No");
 if (choice == 0) {
     say("Alice", "Me too!");
 } else {
     say("Alice", "Oh, I see...");
+}
+```
+You can use switch case and create branch path with
+
+```java
+say("Alice", "Do you like cats?");
+int choice = menu("Yes", "No");
+switch(choice) {
+   case 0 -> LikeCatYes();
+   case 1 -> LikeCateNo();
+   default -> return;
 }
 ```
 
