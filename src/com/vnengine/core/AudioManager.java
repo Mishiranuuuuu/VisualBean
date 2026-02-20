@@ -43,11 +43,14 @@ public class AudioManager {
                     dB = (float) (Math.log10(volume) * 20.0);
                 }
 
+                System.out.println("[AudioManager] Volume: " + volume + " dB: " + dB);
+
                 dB = Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), dB));
 
                 gainControl.setValue(dB);
             }
         } catch (Exception e) {
+            System.err.println("[AudioManager] Failed to set volume");
             e.printStackTrace();
         }
     }
@@ -68,7 +71,7 @@ public class AudioManager {
                             "MP3 format is not supported by standard Java Sound.\nPlease convert '" + name
                                     + "' to WAV.",
                             "Audio Format Error", javax.swing.JOptionPane.WARNING_MESSAGE);
-                    System.err.println("MP3 not supported: " + name);
+                    System.err.println("[AudioManager] MP3 not supported: " + name);
                     return;
                 }
 
@@ -84,15 +87,17 @@ public class AudioManager {
                     currentMusic.start();
                 }
                 currentMusicName = name;
+                System.out.println("[AudioManager] Playing music: " + name);
             } else {
-                System.err.println("Music file not found: " + name);
+                System.err.println("[AudioManager] Music file not found: " + name);
             }
         } catch (UnsupportedAudioFileException e) {
-            System.err.println("Unsupported Audio Format: " + name);
+            System.err.println("[AudioManager] Unsupported Audio Format: " + name);
             javax.swing.JOptionPane.showMessageDialog(null,
                     "The audio file '" + name + "' is not supported.\nTry using standard WAV (16-bit PCM).",
                     "Audio Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
+            System.err.println("[AudioManager] Failed to play music: " + name);
             e.printStackTrace();
         }
     }
@@ -104,6 +109,7 @@ public class AudioManager {
         }
         currentMusic = null;
         currentMusicName = null;
+        System.out.println("[AudioManager] Stopped music");
     }
 
     public void playSound(String name) {
@@ -117,10 +123,12 @@ public class AudioManager {
                 setVolume(clip, sfxVolume);
 
                 clip.start();
+                System.out.println("[AudioManager] Playing SFX: " + name);
             } else {
-                System.err.println("SFX file not found: " + name);
+                System.err.println("[AudioManager] SFX file not found: " + name);
             }
         } catch (Exception e) {
+            System.err.println("[AudioManager] Failed to play SFX: " + name);
             e.printStackTrace();
         }
     }
@@ -128,14 +136,19 @@ public class AudioManager {
     private File findAudioFile(String basePath) {
         String[] extensions = { ".wav", ".au", ".aiff", ".mp3" };
         File f = new File(basePath);
-        if (f.exists())
+        if (f.exists()) {
+            System.out.println("[AudioManager] Found audio file: " + basePath);
             return f;
+        }
 
         for (String ext : extensions) {
             f = new File(basePath + ext);
-            if (f.exists())
+            if (f.exists()) {
+                System.out.println("[AudioManager] Found audio file: " + basePath + ext);
                 return f;
+            }
         }
+        System.out.println("[AudioManager] Audio file not found: " + basePath);
         return null;
     }
 }
