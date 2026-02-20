@@ -63,7 +63,6 @@ int choice = menu("Yes", "No");
 switch(choice) {
    case 0 -> LikeCatYes();
    case 1 -> LikeCateNo();
-   default -> return;
 }
 ```
 
