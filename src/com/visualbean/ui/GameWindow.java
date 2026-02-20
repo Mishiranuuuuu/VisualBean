@@ -1,10 +1,10 @@
-package com.vnengine.ui;
+package com.visualbean.ui;
 
-import com.vnengine.core.GameEngine;
-import com.vnengine.core.GameEngine.LogEntry;
-import com.vnengine.core.SaveData;
-import com.vnengine.core.SaveManager;
-import com.vnengine.core.SettingsManager;
+import com.visualbean.core.GameEngine;
+import com.visualbean.core.GameEngine.LogEntry;
+import com.visualbean.core.SaveData;
+import com.visualbean.core.SaveManager;
+import com.visualbean.core.SettingsManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -777,7 +777,7 @@ public class GameWindow extends JFrame {
             g2d.setPaint(new GradientPaint(0, 0, bgTop, 0, h, bgBottom));
             g2d.fillRect(0, 0, w, h);
 
-            String title = "Java Visual Novel Engine";
+            String title = "VisualBean";
 
             Font titleFont = scale(sm.getFont(".main-menu-title", Font.BOLD, 60));
             g2d.setFont(titleFont);

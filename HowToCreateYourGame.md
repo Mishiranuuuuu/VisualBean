@@ -1,11 +1,11 @@
 # VisualBean Engine - User Manual
 
-Welcome to the **Java Visual Novel Engine**! This manual documents how to create your own visual novels, covering everything from basic script writing to advanced feature like window manipulation and sub-windows.
+Welcome to **VisualBean**! This manual documents how to create your own visual novels, covering everything from basic script writing to advanced features like window manipulation, dynamic scaling, and sub-windows.
 
 ## 1. Getting Started
 
 ### Project Structure
-*   **`src/com/vnengine/game/`**: Your game scripts (Java files) live here.
+*   **`src/com/visualbean/game/`**: Your game scripts (Java files) live here.
 *   **`resources/`**: Your assets repository.
     *   `backgrounds/`: Background images (JPG/PNG).
     *   `characters/`: Character sprites (PNG with transparency).
@@ -13,15 +13,15 @@ Welcome to the **Java Visual Novel Engine**! This manual documents how to create
 *   **`resources/theme.css`**: UI styling.
 
 ### Creating Your First Script
-1.  Create a new file `MyStory.java` in `src/com/vnengine/game/`.
+1.  Go to `MyGame.java` in `src/com/visualbean/game/`.
 2.  Extend `GameScript` and implement `run()`.
 
 ```java
-package com.vnengine.game;
+package com.visualbean.game;
 
-import com.vnengine.script.GameScript;
+import com.visualbean.script.GameScript;
 
-public class MyStory extends GameScript {
+public class MyGame extends GameScript {
     @Override
     public void run() {
         scene("classroom");
@@ -34,8 +34,6 @@ public class MyStory extends GameScript {
     }
 }
 ```
-
-3.  **Activate it**: Open `src/com/vnengine/Main.java`, find `engine.executeScript(...)` and change `new MyGame()` to `new MyStory()`.
 
 ---
 
@@ -94,11 +92,17 @@ Break the fourth wall or create dynamic effects by manipulating the game window 
 *   **`resizeWindowCentered(w, h, duration, [easing])`**: Resizes while changing position to stay centered.
 *   **`dialogPos(x, y)`**: Sets the dialogue box position.
 *   **`dialogSlide(x, y, duration, [easing])`**: Animates the dialogue box.
-*   **`fakeError(title, message, [x, y])`**: Spawns a fake system error popup. Only one exists at a time.
+*   **`fakeError(title, message, [x, y])`**: Spawns a system error popup.
+*   **`changeWallpaper(imagePath)`**: Changes the user's desktop wallpaper (Windows only).
+*   **`restoreWallpaper()`**: Restores the user's original desktop wallpaper.
+*   **`getWallpaper()`**: Returns the file path of the current desktop wallpaper.
+*   **`website(url)`** / **`openWeb(url)`**: Opens the specified URL in the default web browser.
 
 ```java
 windowShake(10, 500); // Shake intensity 10 for 0.5s
-fakeError("System Failure", "Just kidding!");
+fakeError("System Failure", "This is a real popup!");
+changeWallpaper("resources/backgrounds/creepy_bg.png"); // Fourth-wall breaking effect
+website("https://example.com"); // Opens a web link
 ```
 
 ### Sub-Windows (Multi-Window Support)

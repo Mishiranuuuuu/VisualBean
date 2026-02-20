@@ -1,9 +1,9 @@
-package com.vnengine.game;
+package com.visualbean.game;
 
-import com.vnengine.script.GameScript;
+import com.visualbean.script.GameScript;
 
 /**
- * ULTIMATE DEMO: Showcasing ALL features of the VN Engine!
+ * ULTIMATE DEMO: Showcasing ALL features of VisualBean!
  */
 public class MyGame extends GameScript {
 
@@ -218,7 +218,7 @@ public class MyGame extends GameScript {
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "And that concludes our demo!");
 
-        say(SAKURA, "Thank you for checking out the Java Visual Novel Engine.");
+        say(SAKURA, "Thank you for checking out VisualBean.");
         say(SAKURA, "Have fun creating your own stories!");
 
         move(SAKURA, 1200, 50, 1000, "EASE_IN_CUBIC");
@@ -229,6 +229,6 @@ public class MyGame extends GameScript {
     }
 
     public static void main(String[] args) {
-        com.vnengine.Main.main(args);
+        com.visualbean.Main.main(args);
     }
 }

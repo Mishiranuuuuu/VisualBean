@@ -1,4 +1,4 @@
-package com.vnengine.core;
+package com.visualbean.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +50,7 @@ public class SettingsManager {
         props.setProperty("fullscreen", String.valueOf(fullscreen));
 
         try (FileOutputStream out = new FileOutputStream(settingsFile)) {
-            props.store(out, "VN Engine Settings");
+            props.store(out, "VisualBean Settings");
         } catch (IOException e) {
             e.printStackTrace();
         }

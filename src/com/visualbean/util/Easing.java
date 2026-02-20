@@ -1,4 +1,4 @@
-package com.vnengine.util;
+package com.visualbean.util;
 
 public enum Easing {
     LINEAR,

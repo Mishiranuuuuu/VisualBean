@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 pushd "%~dp0\..\.."
 
 echo ===========================================
-echo       Java Visual Novel Engine Builder
+echo       VisualBean Builder
 echo ===========================================
 echo.
 
@@ -30,7 +30,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 pushd src
-javac -d ..\build -sourcepath . com\vnengine\Main.java com\vnengine\core\*.java com\vnengine\game\*.java com\vnengine\script\*.java com\vnengine\ui\*.java com\vnengine\util\*.java
+javac -d ..\build -sourcepath . com\visualbean\Main.java com\visualbean\core\*.java com\visualbean\game\*.java com\visualbean\script\*.java com\visualbean\ui\*.java com\visualbean\util\*.java
 if %ERRORLEVEL% NEQ 0 (
     popd
     echo [ERROR] Compilation failed!
@@ -41,7 +41,7 @@ popd
 
 :: 3. Package JAR
 echo [3/5] Packaging JAR file...
-echo Main-Class: com.vnengine.Main> %BUILD_DIR%\manifest.txt
+echo Main-Class: com.visualbean.Main> %BUILD_DIR%\manifest.txt
 jar cfm %DIST_DIR%\%JAR_NAME% %BUILD_DIR%\manifest.txt -C %BUILD_DIR% .
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Failed to package JAR.

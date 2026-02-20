@@ -1,4 +1,4 @@
-# VisualBaen Engine
+# VisualBean Engine
 
 A powerful, lightweight, and customizable engine for creating Visual Novels using Java and Swing. Designed to be easy to use for developers while offering deep customization through CSS-like theming and Java-based scripting.
 
@@ -17,6 +17,12 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
     *   Persists window positions and preferences.
 *   **Audio**: Support for Background Music (BGM) and Sound Effects (SFX) (WAV/AU formats).
 *   **Window Management**: Custom window titles, resizable windows, and animated interactions.
+*   **Meta Features** (Fourth-Wall Breaking):
+    *   Desktop wallpaper changing, native OS error popups, and opening websites directly from the script.
+*   **Quality of Life**:
+    *   Auto-forward text reading mode.
+    *   Comprehensive settings panel with keybind information.
+    *   Dynamic window scaling (everything resizes properly).
 
 ## Getting Started
 
@@ -46,17 +52,17 @@ For a detailed guide on creating your own Visual Novel, please refer to **[HowTo
 
 ### Quick Example
 
-Scripts are located in `src/com/vnengine/game/`. Inherit from `GameScript` to start:
+Scripts are located in `src/com/visualbean/game/`. Inherit from `GameScript` to start:
 
 ```java
-public class MyStory extends GameScript {
+public class MyGame extends GameScript {
     @Override
     public void run() {
         scene("classroom");
         playMusic("bgm_happy");
         
         show("Alice", "smile");
-        say("Alice", "Hi! Welcome to the Java VN Engine.");
+        say("Alice", "Hi! Welcome to VisualBean!");
         
         int choice = menu("Ready to start?", "Yes!", "Not yet.");
         if (choice == 0) {

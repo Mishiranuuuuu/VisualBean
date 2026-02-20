@@ -9,7 +9,7 @@ echo.
 if not exist bin mkdir bin
 
 echo [1/2] Compiling Tools...
-javac -d bin -sourcepath src src/com/vnengine/tools/SaveInspector.java src/com/vnengine/core/SaveData.java
+javac -d bin -sourcepath src src/com/visualbean/tools/SaveInspector.java src/com/visualbean/core/SaveData.java
 if errorlevel 1 (
     echo.
     echo [ERROR] Compilation failed! 
@@ -21,7 +21,7 @@ if errorlevel 1 (
 echo.
 echo [2/2] Inspecting Saves...
 echo.
-java -cp bin com.vnengine.tools.SaveInspector
+java -cp bin com.visualbean.tools.SaveInspector
 
 echo.
 pause

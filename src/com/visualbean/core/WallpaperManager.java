@@ -1,4 +1,4 @@
-package com.vnengine.core;
+package com.visualbean.core;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,7 +70,7 @@ public class WallpaperManager {
 
         File tempScript = null;
         try {
-            tempScript = File.createTempFile("vnengine_wallpaper_", ".ps1");
+            tempScript = File.createTempFile("visualbean_wallpaper_", ".ps1");
             tempScript.deleteOnExit();
 
             try (FileWriter writer = new FileWriter(tempScript, StandardCharsets.UTF_8)) {
@@ -146,7 +146,7 @@ public class WallpaperManager {
 
         File tempScript = null;
         try {
-            tempScript = File.createTempFile("vnengine_wallpaper_", ".ps1");
+            tempScript = File.createTempFile("visualbean_wallpaper_", ".ps1");
             tempScript.deleteOnExit();
 
             try (FileWriter writer = new FileWriter(tempScript, StandardCharsets.UTF_8)) {

@@ -1,7 +1,7 @@
-package com.vnengine.ui;
+package com.visualbean.ui;
 
-import com.vnengine.core.GameEngine;
-import com.vnengine.util.Easing;
+import com.visualbean.core.GameEngine;
+import com.visualbean.util.Easing;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.vnengine.core;
+package com.visualbean.core;
 
 import javax.sound.sampled.*;
 import java.io.File;

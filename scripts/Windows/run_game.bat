@@ -5,7 +5,7 @@ setlocal
 pushd "%~dp0\..\.."
 
 echo ===========================================
-echo       Java Visual Novel Engine
+echo       VisualBean
 echo ===========================================
 echo.
 
@@ -22,7 +22,7 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-javac -d bin -sourcepath src src/com/vnengine/Main.java
+javac -d bin -sourcepath src src/com/visualbean/Main.java
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Compilation Failed! Please check your code for errors.
@@ -33,7 +33,7 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo [2/2] Running Game...
 echo.
-java -cp bin com.vnengine.Main
+java -cp bin com.visualbean.Main
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Game crashed or exited with an error.

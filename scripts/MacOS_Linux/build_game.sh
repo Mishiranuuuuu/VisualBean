@@ -4,7 +4,7 @@
 cd "$(dirname "$0")/../.." || exit
 
 echo "==========================================="
-echo "      Java Visual Novel Engine Builder"
+echo "      VisualBean Builder"
 echo "==========================================="
 echo ""
 
@@ -25,7 +25,7 @@ if ! command -v javac &> /dev/null; then
     exit 1
 fi
 
-javac -d "$BUILD_DIR" -sourcepath src src/com/vnengine/Main.java src/com/vnengine/core/*.java src/com/vnengine/game/*.java src/com/vnengine/script/*.java src/com/vnengine/ui/*.java src/com/vnengine/util/*.java
+javac -d "$BUILD_DIR" -sourcepath src src/com/visualbean/Main.java src/com/visualbean/core/*.java src/com/visualbean/game/*.java src/com/visualbean/script/*.java src/com/visualbean/ui/*.java src/com/visualbean/util/*.java
 
 if [ $? -ne 0 ]; then
     echo "[ERROR] Compilation failed!"
@@ -34,7 +34,7 @@ fi
 
 # 3. Package JAR
 echo "[3/4] Packaging JAR file..."
-echo "Main-Class: com.vnengine.Main" > "$BUILD_DIR/manifest.txt"
+echo "Main-Class: com.visualbean.Main" > "$BUILD_DIR/manifest.txt"
 jar cfm "$DIST_DIR/$JAR_NAME" "$BUILD_DIR/manifest.txt" -C "$BUILD_DIR" .
 
 if [ $? -ne 0 ]; then

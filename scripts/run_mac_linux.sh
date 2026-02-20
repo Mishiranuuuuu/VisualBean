@@ -3,5 +3,5 @@
 cd "$(dirname "$0")/.."
 
 mkdir -p bin
-javac -d bin -sourcepath src src/com/vnengine/Main.java
-java -cp bin com.vnengine.Main
+javac -d bin -sourcepath src src/com/visualbean/Main.java
+java -cp bin com.visualbean.Main

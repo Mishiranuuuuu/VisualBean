@@ -1,6 +1,6 @@
-package com.vnengine.script;
+package com.visualbean.script;
 
-import com.vnengine.core.GameEngine;
+import com.visualbean.core.GameEngine;
 
 public abstract class GameScript implements Runnable {
     protected GameEngine engine;
@@ -86,11 +86,11 @@ public abstract class GameScript implements Runnable {
 
     protected void windowCenter(int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.centerWindow(duration, e);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
-            engine.centerWindow(duration, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC);
+            engine.centerWindow(duration, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC);
         }
     }
 
@@ -104,7 +104,7 @@ public abstract class GameScript implements Runnable {
 
     protected void windowSlide(int x, int y, int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.slideWindow(x, y, duration, e);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
@@ -142,11 +142,11 @@ public abstract class GameScript implements Runnable {
 
     protected void move(String name, int x, int y, int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.slideCharacter(name, x, y, duration, e);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
-            engine.slideCharacter(name, x, y, duration, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC);
+            engine.slideCharacter(name, x, y, duration, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC);
         }
     }
 
@@ -156,11 +156,11 @@ public abstract class GameScript implements Runnable {
 
     protected void dialogSlide(int x, int y, int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.slideDialog(x, y, duration, e);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
-            engine.slideDialog(x, y, duration, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC);
+            engine.slideDialog(x, y, duration, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC);
         }
     }
 
@@ -170,11 +170,11 @@ public abstract class GameScript implements Runnable {
 
     protected void resizeWindow(int width, int height, int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.resizeWindow(width, height, duration, e);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
-            engine.resizeWindow(width, height, duration, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC);
+            engine.resizeWindow(width, height, duration, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC);
         }
     }
 
@@ -184,11 +184,11 @@ public abstract class GameScript implements Runnable {
 
     protected void resizeWindowCentered(int width, int height, int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.resizeWindow(width, height, duration, e, true);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
-            engine.resizeWindow(width, height, duration, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC, true);
+            engine.resizeWindow(width, height, duration, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC, true);
         }
     }
 
@@ -198,11 +198,11 @@ public abstract class GameScript implements Runnable {
 
     protected void scale(String name, double scale, int duration, String easing) {
         try {
-            com.vnengine.util.Easing e = com.vnengine.util.Easing.valueOf(easing.toUpperCase());
+            com.visualbean.util.Easing e = com.visualbean.util.Easing.valueOf(easing.toUpperCase());
             engine.scaleCharacter(name, scale, duration, e);
         } catch (IllegalArgumentException ex) {
             System.err.println("Invalid easing: " + easing + ", using default.");
-            engine.scaleCharacter(name, scale, duration, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC);
+            engine.scaleCharacter(name, scale, duration, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC);
         }
     }
 

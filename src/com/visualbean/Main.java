@@ -1,8 +1,8 @@
-package com.vnengine;
+package com.visualbean;
 
-import com.vnengine.core.GameEngine;
-import com.vnengine.game.MyGame;
-import com.vnengine.script.GameScript;
+import com.visualbean.core.GameEngine;
+import com.visualbean.game.MyGame;
+import com.visualbean.script.GameScript;
 
 public class Main {
     public static void main(String[] args) {

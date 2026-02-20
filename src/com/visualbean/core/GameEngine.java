@@ -1,7 +1,7 @@
-package com.vnengine.core;
+package com.visualbean.core;
 
-import com.vnengine.ui.GameWindow;
-import com.vnengine.ui.SubWindow;
+import com.visualbean.ui.GameWindow;
+import com.visualbean.ui.SubWindow;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public class GameEngine {
     private Map<String, Double> characterScales;
     private Map<String, Point> characterPositions;
     private Point customDialogPosition = null;
-    private String currentWindowTitle = "Java Visual Novel Engine";
+    private String currentWindowTitle = "VisualBean";
 
     private String currentSpeaker;
     private String currentDialogue;
@@ -336,7 +336,7 @@ public class GameEngine {
         this.characterScales = new HashMap<>(data.characterScales);
         this.intendedMusic = data.currentMusic;
         this.customDialogPosition = data.dialogPosition;
-        this.currentWindowTitle = data.windowTitle != null ? data.windowTitle : "Java Visual Novel Engine";
+        this.currentWindowTitle = data.windowTitle != null ? data.windowTitle : "VisualBean";
 
         SwingUtilities.invokeLater(() -> {
             if (data.windowSize != null) {
@@ -529,7 +529,7 @@ public class GameEngine {
         centerWindow(0, null);
     }
 
-    public void centerWindow(int durationMs, com.vnengine.util.Easing easing) {
+    public void centerWindow(int durationMs, com.visualbean.util.Easing easing) {
         if (isSkipping())
             return;
 
@@ -578,10 +578,10 @@ public class GameEngine {
     }
 
     public void slideWindow(int targetX, int targetY, int durationMs) {
-        slideWindow(targetX, targetY, durationMs, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC);
+        slideWindow(targetX, targetY, durationMs, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC);
     }
 
-    public void slideWindow(int targetX, int targetY, int durationMs, com.vnengine.util.Easing easing) {
+    public void slideWindow(int targetX, int targetY, int durationMs, com.visualbean.util.Easing easing) {
         if (isSkipping()) {
             setWindowPosition(targetX, targetY);
             return;
@@ -623,7 +623,8 @@ public class GameEngine {
 
     // Character animation
 
-    public void slideCharacter(String name, int targetX, int targetY, int durationMs, com.vnengine.util.Easing easing) {
+    public void slideCharacter(String name, int targetX, int targetY, int durationMs,
+            com.visualbean.util.Easing easing) {
         if (!visibleCharacters.containsKey(name))
             return;
 
@@ -677,7 +678,7 @@ public class GameEngine {
         animThread.start();
     }
 
-    public void slideDialog(int targetX, int targetY, int durationMs, com.vnengine.util.Easing easing) {
+    public void slideDialog(int targetX, int targetY, int durationMs, com.visualbean.util.Easing easing) {
         if (isSkipping()) {
             setDialogPosition(targetX, targetY);
             return;
@@ -718,14 +719,14 @@ public class GameEngine {
     }
 
     public void resizeWindow(int targetW, int targetH, int durationMs) {
-        resizeWindow(targetW, targetH, durationMs, com.vnengine.util.Easing.EASE_IN_OUT_CUBIC, false);
+        resizeWindow(targetW, targetH, durationMs, com.visualbean.util.Easing.EASE_IN_OUT_CUBIC, false);
     }
 
-    public void resizeWindow(int targetW, int targetH, int durationMs, com.vnengine.util.Easing easing) {
+    public void resizeWindow(int targetW, int targetH, int durationMs, com.visualbean.util.Easing easing) {
         resizeWindow(targetW, targetH, durationMs, easing, false);
     }
 
-    public void resizeWindow(int targetW, int targetH, int durationMs, com.vnengine.util.Easing easing,
+    public void resizeWindow(int targetW, int targetH, int durationMs, com.visualbean.util.Easing easing,
             boolean keepCentered) {
         if (isSkipping()) {
             setWindowSize(targetW, targetH);
@@ -822,7 +823,7 @@ public class GameEngine {
         WallpaperManager.restoreWallpaper();
     }
 
-    public void scaleCharacter(String name, double targetScale, int durationMs, com.vnengine.util.Easing easing) {
+    public void scaleCharacter(String name, double targetScale, int durationMs, com.visualbean.util.Easing easing) {
         if (!visibleCharacters.containsKey(name))
             return;
 

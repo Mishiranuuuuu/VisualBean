@@ -1,4 +1,4 @@
-package com.vnengine.core;
+package com.visualbean.core;
 
 import java.io.Serializable;
 import java.util.Date;
