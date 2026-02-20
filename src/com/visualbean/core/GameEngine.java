@@ -803,6 +803,58 @@ public class GameEngine {
         }
     }
 
+    // System tray notification (cross-platform)
+    private java.awt.TrayIcon trayIcon;
+
+    public void showNotification(String title, String message) {
+        if (isSkipping())
+            return;
+
+        if (!java.awt.SystemTray.isSupported()) {
+            System.err.println("System tray notifications are not supported on this platform.");
+            return;
+        }
+
+        try {
+            java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
+
+            // Create tray icon only once, reuse for subsequent notifications
+            if (trayIcon == null) {
+                // Create a small icon for the tray
+                java.awt.Image icon = new java.awt.image.BufferedImage(16, 16,
+                        java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                java.awt.Graphics2D g = (java.awt.Graphics2D) icon.getGraphics();
+                g.setColor(new java.awt.Color(100, 149, 237));
+                g.fillRoundRect(0, 0, 16, 16, 4, 4);
+                g.setColor(java.awt.Color.WHITE);
+                g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 11));
+                g.drawString("V", 3, 13);
+                g.dispose();
+
+                trayIcon = new java.awt.TrayIcon(icon, "VisualBean");
+                trayIcon.setImageAutoSize(true);
+                tray.add(trayIcon);
+            }
+
+            trayIcon.displayMessage(title, message, java.awt.TrayIcon.MessageType.INFO);
+
+            // Auto-remove tray icon after a delay so it doesn't clutter
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    if (trayIcon != null) {
+                        java.awt.SystemTray.getSystemTray().remove(trayIcon);
+                        trayIcon = null;
+                    }
+                } catch (Exception ignored) {
+                }
+            }).start();
+        } catch (Exception e) {
+            System.err.println("Error showing notification: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     // Desktop wallpaper (meta feature)
     public String getDesktopWallpaper() {
         return WallpaperManager.getCurrentWallpaper();

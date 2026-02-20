@@ -128,6 +128,11 @@ public class MyGame extends GameScript {
         dialogSlide(100, 100, 800, "EASE_OUT_CUBIC");
         say(SAKURA, "See? I'm floating up here!");
         dialogReset();
+
+        say(SAKURA, "I can force fullscreen mode too!");
+        windowFullscreen(true);
+        say(SAKURA, "Now I'm in fullscreen mode!");
+        windowFullscreen(false);
         say(SAKURA, "Back to normal.");
     }
 
@@ -166,11 +171,17 @@ public class MyGame extends GameScript {
         fakeError("System Warning", "This is a native error popup triggered by the script!");
         say(SAKURA, "Did you see that popup? Useful for fourth-wall breaks!");
 
+        show(SAKURA, "demo_girl_happy");
+        say(SAKURA, "I can also send Windows notifications!");
+        notify("VisualBean", "Hello from Sakura! This is a Windows notification!");
+        say(SAKURA, "Did you see that notification appear in the corner? Pretty cool, right?");
+
         narrator("The engine supports a full Save/Load system.");
         narrator("You can save by pausing or using the menu features.");
         narrator("You can also delete saves if you make a mistake.");
 
-        int webChoice = menu("Do you want to visit the engine website?", "Yes, open it!", "Maybe later.");
+        say(SAKURA, "Wanna visit google?");
+        int webChoice = menu("Yes, open it!", "Maybe later.");
         if (webChoice == 0) {
             website("https://google.com");
             say(SAKURA, "Opened it for you!");

@@ -278,6 +278,14 @@ public abstract class GameScript implements Runnable {
         engine.openWebsite(url);
     }
 
+    protected void notification(String title, String message) {
+        engine.showNotification(title, message);
+    }
+
+    protected void notify(String title, String message) {
+        engine.showNotification(title, message);
+    }
+
     @Override
     public abstract void run();
 }
