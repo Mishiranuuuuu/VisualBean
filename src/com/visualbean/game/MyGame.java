@@ -180,10 +180,10 @@ public class MyGame extends GameScript {
         narrator("You can save by pausing or using the menu features.");
         narrator("You can also delete saves if you make a mistake.");
 
-        say(SAKURA, "Wanna visit google?");
+        say(SAKURA, "Wanna visit my github page?");
         int webChoice = menu("Yes, open it!", "Maybe later.");
         if (webChoice == 0) {
-            website("https://google.com");
+            website("https://github.com/Mishiranuuuuu/VisualBean");
             say(SAKURA, "Opened it for you!");
         } else {
             say(SAKURA, "No problem!");
