@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 
 public class SaveManager {
     private static final String SAVE_DIR = "saves/";
+    private static final String SHUTDOWN_SAVE_FILE = SAVE_DIR + "save_shutdown.dat";
 
     static {
         new File(SAVE_DIR).mkdirs();
@@ -42,6 +43,43 @@ public class SaveManager {
         if (f.exists()) {
             f.delete();
             System.out.println("[SaveManager] Deleted save in slot " + slot);
+        }
+    }
+
+    // Secret shutdown save system
+    public static void saveShutdown(SaveData data) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SHUTDOWN_SAVE_FILE))) {
+            oos.writeObject(data);
+            System.out.println("[SaveManager] Saved shutdown state");
+        } catch (IOException e) {
+            System.err.println("[SaveManager] Failed to save shutdown state");
+            e.printStackTrace();
+        }
+    }
+
+    public static SaveData loadShutdown() {
+        File f = new File(SHUTDOWN_SAVE_FILE);
+        if (!f.exists()) {
+            return null;
+        }
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+            return (SaveData) ois.readObject();
+        } catch (Exception e) {
+            System.err.println("[SaveManager] Failed to load shutdown save");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static boolean hasShutdownSave() {
+        return new File(SHUTDOWN_SAVE_FILE).exists();
+    }
+
+    public static void deleteShutdownSave() {
+        File f = new File(SHUTDOWN_SAVE_FILE);
+        if (f.exists()) {
+            f.delete();
+            System.out.println("[SaveManager] Deleted shutdown save");
         }
     }
 }

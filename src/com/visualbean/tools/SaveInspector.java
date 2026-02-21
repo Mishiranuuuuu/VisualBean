@@ -56,6 +56,12 @@ public class SaveInspector {
                     System.out.println("  Characters: None");
                 }
 
+                if (data.choiceHistory != null && !data.choiceHistory.isEmpty()) {
+                    System.out.println("  Choices   : " + data.choiceHistory);
+                } else {
+                    System.out.println("  Choices   : None");
+                }
+
                 System.out.println("  File Size : " + f.length() + " bytes");
             } catch (Exception e) {
                 System.out.println("  [ERROR] Could not read file: " + e.getMessage());

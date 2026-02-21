@@ -210,7 +210,11 @@ public class GameWindow extends JFrame {
                         return;
                     }
                     if (e.getX() >= loadX && e.getX() <= loadX + tbW) {
-                        openOverlay(OverlayState.LOAD);
+                        if (engine.hasShutdownSave()) {
+                            engine.loadShutdownSave();
+                        } else {
+                            openOverlay(OverlayState.LOAD);
+                        }
                         return;
                     }
                     if (e.getX() >= autoX && e.getX() <= autoX + tbW) {
@@ -361,10 +365,14 @@ public class GameWindow extends JFrame {
             return;
         }
 
-        // Load Game
+        // Load Game (check for secret shutdown save first)
         int loadY = startY + btnH + gap;
         if (mx >= btnX && mx <= btnX + btnW && my >= loadY && my <= loadY + btnH) {
-            openOverlay(OverlayState.LOAD);
+            if (engine.hasShutdownSave()) {
+                engine.loadShutdownSave();
+            } else {
+                openOverlay(OverlayState.LOAD);
+            }
             return;
         }
 

@@ -1,10 +1,12 @@
 package com.visualbean.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class SaveData implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     public int stepIndex;
     public String timestamp;
@@ -19,6 +21,9 @@ public class SaveData implements Serializable {
     public java.awt.Point windowPosition;
     public String windowTitle;
     public java.awt.Point dialogPosition;
+
+    // Tracks which choices were made so branches can be replayed correctly on load
+    public List<Integer> choiceHistory = new ArrayList<>();
 
     public String description;
 

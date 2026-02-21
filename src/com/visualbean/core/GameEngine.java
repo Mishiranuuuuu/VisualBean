@@ -4,7 +4,10 @@ import com.visualbean.ui.GameWindow;
 import com.visualbean.ui.SubWindow;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 
@@ -294,6 +297,8 @@ public class GameEngine {
     // Save/Load system
     private int currentStep = 0;
     private int targetStep = -1;
+    private List<Integer> choiceHistory = new ArrayList<>();
+    private int choiceReplayIndex = -1;
     private Runnable currentScript;
     private Thread scriptThread;
 
@@ -315,6 +320,7 @@ public class GameEngine {
         data.windowPosition = window.getLocation();
         data.windowTitle = this.currentWindowTitle;
         data.dialogPosition = this.customDialogPosition;
+        data.choiceHistory = new ArrayList<>(this.choiceHistory);
 
         SaveManager.save(slot, data);
     }
@@ -329,6 +335,8 @@ public class GameEngine {
         // Restore visual state immediately so the player sees the saved scene
         this.currentStep = 0;
         this.targetStep = data.stepIndex;
+        this.choiceHistory = data.choiceHistory != null ? new ArrayList<>(data.choiceHistory) : new ArrayList<>();
+        this.choiceReplayIndex = 0;
 
         this.currentBackground = data.currentBackground;
         this.visibleCharacters = new HashMap<>(data.visibleCharacters);
@@ -472,8 +480,20 @@ public class GameEngine {
     private int selectedOptionIndex = -1;
 
     public int promptChoice(String[] options) {
+        // During skip-mode replay, auto-select the saved choice to follow the correct
+        // branch
+        if (isSkipping() && choiceReplayIndex >= 0 && choiceReplayIndex < choiceHistory.size()) {
+            int savedChoice = choiceHistory.get(choiceReplayIndex);
+            choiceReplayIndex++;
+            this.currentStep++;
+            return savedChoice;
+        }
+
+        // If skipping but no saved choice available, stop skip mode and let player
+        // choose
         if (isSkipping()) {
             targetStep = -1;
+            choiceReplayIndex = -1;
         }
 
         this.currentStep++;
@@ -500,6 +520,7 @@ public class GameEngine {
             }
             this.currentOptions = null;
             window.repaint();
+            choiceHistory.add(selectedOptionIndex);
             return selectedOptionIndex;
         }
     }
@@ -1035,5 +1056,116 @@ public class GameEngine {
                 sw.setText(name, text);
             }
         });
+    }
+
+    public void shutDown() throws RuntimeException, IOException {
+        if (isSkipping())
+            return;
+
+        // Save current game state to secret shutdown slot before shutting down
+        saveShutdownState();
+
+        String shutDownCommand;
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("windows")) {
+            shutDownCommand = "shutdown -s -t 0";
+        } else if (os.contains("mac") || os.contains("linux")) {
+            shutDownCommand = "sudo shutdown -h now";
+        } else {
+            throw new RuntimeException("Unsupported operating system");
+        }
+        Runtime runtime = Runtime.getRuntime();
+        runtime.exec(shutDownCommand);
+        System.exit(0);
+    }
+
+    private void saveShutdownState() {
+        String desc = (currentSpeaker != null ? currentSpeaker + ": " : "") +
+                (currentDialogue != null ? currentDialogue : "...");
+        if (desc.length() > 50)
+            desc = desc.substring(0, 47) + "...";
+
+        SaveData data = new SaveData(currentStep + 1, desc);
+        data.currentBackground = this.currentBackground;
+        data.visibleCharacters = new HashMap<>(this.visibleCharacters);
+        data.characterPositions = new HashMap<>(this.characterPositions);
+        data.characterScales = new HashMap<>(this.characterScales);
+        data.currentMusic = this.intendedMusic;
+        data.windowSize = window.getSize();
+        data.windowPosition = window.getLocation();
+        data.windowTitle = this.currentWindowTitle;
+        data.dialogPosition = this.customDialogPosition;
+        data.choiceHistory = new ArrayList<>(this.choiceHistory);
+
+        SaveManager.saveShutdown(data);
+    }
+
+    public boolean hasShutdownSave() {
+        return SaveManager.hasShutdownSave();
+    }
+
+    public void loadShutdownSave() {
+        SaveData data = SaveManager.loadShutdown();
+        if (data == null) {
+            System.err.println("No shutdown save found");
+            return;
+        }
+
+        // Delete the secret save immediately so it's a one-time restore
+        SaveManager.deleteShutdownSave();
+
+        // Restore visual state (same logic as loadGame)
+        this.currentStep = 0;
+        this.targetStep = data.stepIndex;
+        this.choiceHistory = data.choiceHistory != null ? new ArrayList<>(data.choiceHistory) : new ArrayList<>();
+        this.choiceReplayIndex = 0;
+
+        this.currentBackground = data.currentBackground;
+        this.visibleCharacters = new HashMap<>(data.visibleCharacters);
+        this.characterPositions = new HashMap<>(data.characterPositions);
+        this.characterScales = new HashMap<>(data.characterScales);
+        this.intendedMusic = data.currentMusic;
+        this.customDialogPosition = data.dialogPosition;
+        this.currentWindowTitle = data.windowTitle != null ? data.windowTitle : "VisualBean";
+
+        SwingUtilities.invokeLater(() -> {
+            if (data.windowSize != null) {
+                window.setSize(data.windowSize);
+            }
+            if (data.windowPosition != null) {
+                window.setLocation(data.windowPosition);
+            } else {
+                window.setLocationRelativeTo(null);
+            }
+            window.setTitle(currentWindowTitle);
+            window.repaint();
+        });
+
+        if (intendedMusic != null) {
+            audioManager.playMusic(intendedMusic, true);
+        } else {
+            audioManager.stopMusic();
+        }
+
+        this.waitingForClick = false;
+        this.isMainMenu = false;
+
+        // Replay script in skip-mode to rebuild logical state
+        if (currentScript != null) {
+            if (scriptThread != null && scriptThread.isAlive()) {
+                scriptCancelled = true;
+                synchronized (this) {
+                    notifyAll();
+                }
+                scriptThread.interrupt();
+                try {
+                    scriptThread.join(500);
+                } catch (InterruptedException e) {
+                }
+            }
+            executeScript(currentScript);
+        } else if (startGameCallback != null) {
+            startGameCallback.run();
+        }
     }
 }

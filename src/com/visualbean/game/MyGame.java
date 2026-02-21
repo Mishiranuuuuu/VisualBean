@@ -21,7 +21,6 @@ public class MyGame extends GameScript {
         narrator("Welcome to the Ultimate Visual Novel Engine Demo!");
         narrator("This demo will showcase all the amazing features available to you.");
         narrator("From character animations to multi-window tricks, we have it all!");
-
         scene("council");
 
         show(SAKURA, "demo_girl_neutral", -400, 50, 0.8);
@@ -212,6 +211,34 @@ public class MyGame extends GameScript {
         } else {
             show(SAKURA, "demo_girl_smile");
             say(SAKURA, "That's fair! It is a pretty powerful trick though.");
+        }
+
+        show(SAKURA, "demo_girl_scared");
+        say(SAKURA, "And I have one last trick that quite dangerous...");
+        say(SAKURA, "That's force [shake]shutdown...[/shake]!");
+        show(SAKURA, "demo_girl_happy");
+        say(SAKURA, "But don't worry!");
+        say(SAKURA, "The game will save your progress before shutting down.");
+        show(SAKURA, "demo_girl_smile");
+        say(SAKURA, "So you won't lose any progress!");
+        say(SAKURA, "You can re-open the game and continue from where you left off by click load game.");
+        say(SAKURA, "The game will immediately load on where you left off.");
+        say(SAKURA, "Do you want me to shutdown your computer?");
+        int shutdownChoice = menu("Yes, shutdown my computer!", "No way!");
+        if (shutdownChoice == 0) {
+            show(SAKURA, "demo_girl_scared");
+            say(SAKURA, "Ready?");
+            say(SAKURA, "3...");
+            say(SAKURA, "2...");
+            say(SAKURA, "1...");
+            shutDown();
+            say(SAKURA, "");
+            say(SAKURA, "You should be here by now...");
+            say(SAKURA, "Ah! You're back!");
+            say(SAKURA, "How was that?");
+            say(SAKURA, "I think it's pretty cool!");
+        } else {
+            say(SAKURA, "That's fair! It is a pretty dangerous trick though.");
         }
     }
 
