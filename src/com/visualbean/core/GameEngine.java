@@ -469,6 +469,7 @@ public class GameEngine {
                 targetStep = -1;
             } catch (Exception e) {
                 if (!(e instanceof RuntimeException && e.getMessage().equals("Script cancelled"))) {
+                    com.visualbean.util.CrashLogger.log("Script execution", e);
                 }
             }
         });
@@ -1058,6 +1059,7 @@ public class GameEngine {
         });
     }
 
+    @SuppressWarnings("deprecation")
     public void shutDown() throws RuntimeException, IOException {
         if (isSkipping())
             return;

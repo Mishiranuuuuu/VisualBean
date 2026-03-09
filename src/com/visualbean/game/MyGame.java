@@ -113,10 +113,8 @@ public class MyGame extends GameScript {
         windowCenter(800, "EASE_OUT_BOUNCE");
         say(SAKURA, "And back to center.");
 
-        say(SAKURA, "I can even change the window size dynamically.");
-        resizeWindow(1280, 720, 800, "EASE_OUT_ELASTIC");
-        say(SAKURA, "Widescreen!");
         resizeWindow(960, 600, 800, "EASE_IN_OUT_CUBIC");
+        say(SAKURA, "I can even change the window size dynamically.");
 
         say(SAKURA, "Oh, and I can change the window title too!");
         windowTitle("Hello from Sakura!");
@@ -127,6 +125,7 @@ public class MyGame extends GameScript {
         dialogSlide(100, 100, 800, "EASE_OUT_CUBIC");
         say(SAKURA, "See? I'm floating up here!");
         dialogReset();
+        say(SAKURA, "And back to where it belongs.");
 
         say(SAKURA, "I can force fullscreen mode too!");
         windowFullscreen(true);
@@ -138,10 +137,12 @@ public class MyGame extends GameScript {
     private void subWindowDemo() {
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "This is my favorite feature: Multi-Window support!");
+        resizeWindow(960, 540, 800, "EASE_OUT_ELASTIC");
+        windowSlide(640, 250, 800, "EASE_IN_OUT_CUBIC");
 
         String subID = "clone_win";
         createSubWindow(subID, "Sakura's Clone", 640, 360);
-        subWindowPos(subID, 100, 100);
+        subWindowPos(subID, 25, 25);
         subWindowBg(subID, "cafe_day");
 
         showInSubWindow(subID, "Clone", "demo_girl_happy", 100, 0);
@@ -233,7 +234,9 @@ public class MyGame extends GameScript {
             say(SAKURA, "1...");
             shutDown();
             say(SAKURA, "");
+            show(SAKURA, "demo_girl_neutral");
             say(SAKURA, "You should be here by now...");
+            show(SAKURA, "demo_girl_happy");
             say(SAKURA, "Ah! You're back!");
             say(SAKURA, "How was that?");
             say(SAKURA, "I think it's pretty cool!");
