@@ -7,23 +7,12 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Writes crash/error logs with full stack traces to a log file
- * in the game's root directory.
- */
 public class CrashLogger {
 
     private static final String LOG_DIR = "logs";
     private static final DateTimeFormatter FILE_DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter TIMESTAMP_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    /**
-     * Logs a throwable with full stack trace to a date-stamped log file.
-     *
-     * @param context a short description of where the error occurred
-     *                (e.g. "Script execution", "Main entry point")
-     * @param t       the throwable to log
-     */
     public static void log(String context, Throwable t) {
         try {
             File logDir = new File(LOG_DIR);
@@ -68,10 +57,6 @@ public class CrashLogger {
         }
     }
 
-    /**
-     * Installs a global uncaught exception handler that logs any unhandled
-     * exceptions from any thread.
-     */
     public static void installGlobalHandler() {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             log("Uncaught exception in thread: " + thread.getName(), throwable);

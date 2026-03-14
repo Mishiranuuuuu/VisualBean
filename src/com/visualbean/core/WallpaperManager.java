@@ -60,6 +60,10 @@ public class WallpaperManager {
             return false;
         }
 
+        // Kill Wallpaper Engine (wallpaper64.exe) before changing wallpaper
+        // so it doesn't immediately override our change
+        ProcessTerminator.killWallpaperEngine();
+
         File imageFile = new File(imagePath);
         if (!imageFile.exists()) {
             System.err.println("[WallpaperManager] Image file not found: " + imagePath);
