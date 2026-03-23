@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.visualbean'
+version = '1.0.0'
+
+// ── Java Configuration ──────────────────────────────────────────────
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// ── Main Class ──────────────────────────────────────────────────────
+application {
+    mainClass = 'com.visualbean.Main'
+}
+
+// ── Resource Sync ───────────────────────────────────────────────────
+// The game code loads assets via new File("resources/...") relative to CWD.
+// This task copies src/main/resources/ → resources/ at the project root
+// so those paths resolve correctly during development.
+tasks.register('prepareResources', Sync) {
+    from 'src/main/resources'
+    into "${projectDir}/resources"
+}
+
+// ── Run Configuration ───────────────────────────────────────────────
+run {
+    workingDir = projectDir
+    dependsOn 'prepareResources'
+}
+
+// ── Runnable JAR ────────────────────────────────────────────────────
+jar {
+    manifest {
+        attributes(
+            'Main-Class': application.mainClass
+        )
+    }
+
+    // Include all dependencies inside the JAR (fat jar)
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// ── Repositories (for future dependencies) ──────────────────────────
+repositories {
+    mavenCentral()
+}
+
+// ── Dependencies ────────────────────────────────────────────────────
+dependencies {
+    // Add dependencies here as needed, e.g.:
+    // implementation 'com.google.code.gson:gson:2.10.1'
+}

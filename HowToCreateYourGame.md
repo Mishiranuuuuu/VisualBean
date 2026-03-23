@@ -4,16 +4,22 @@ Welcome to **VisualBean**! This manual documents how to create your own visual n
 
 ## 1. Getting Started
 
+### Prerequisites
+
+*   **Java Development Kit (JDK) 17** or higher installed.
+*   **Gradle** is included via the Gradle wrapper (`gradlew` / `gradlew.bat`), so no separate installation is needed.
+
 ### Project Structure
-*   **`src/com/visualbean/game/`**: Your game scripts (Java files) live here.
-*   **`resources/`**: Your assets repository.
+*   **`src/main/java/com/visualbean/game/`**: Your game scripts (Java files) live here.
+*   **`src/main/resources/`**: Your assets repository (Gradle standard layout).
     *   `backgrounds/`: Background images (JPG/PNG).
     *   `characters/`: Character sprites (PNG with transparency).
     *   `audio/`: Music and Sound Effects (WAV/AU).
 *   **`resources/theme.css`**: UI styling.
+*   **`build.gradle`**: Gradle build configuration.
 
 ### Creating Your First Script
-1.  Go to `MyGame.java` in `src/com/visualbean/game/`.
+1.  Go to `MyGame.java` in `src/main/java/com/visualbean/game/`.
 2.  Extend `GameScript` and implement `run()`.
 
 ```java
@@ -33,6 +39,16 @@ public class MyGame extends GameScript {
         narrator("This is a simple narration line.");
     }
 }
+```
+
+### Running Your Game
+
+```bash
+# Windows
+gradlew.bat run
+
+# Linux / macOS
+./gradlew run
 ```
 
 ---
@@ -66,14 +82,28 @@ switch(choice) {
 }
 ```
 
+### Kinetic Text Tags
+
+You can embed animated text effects directly in dialogue strings:
+
+*   **`[shake]text[/shake]`**: Shaking text effect.
+*   **`[wave]text[/wave]`**: Waving text effect.
+*   **`[color=#RRGGBB]text[/color]`**: Colored text.
+
+These tags can be combined freely:
+
+```java
+say("Alice", "This is [shake]shaking[/shake], this is [wave]waving[/wave], and this is [color=#ff0000]red text[/color]!");
+```
+
 ### Visuals & Characters
 *   **`scene(imageName)`**: Sets the background (file name in `resources/backgrounds` without extension).
 *   **`show(name, imageName, [x], [y], [scale])`**: Displays a character. 
     *   `x, y`: Screen coordinates (top-left is 0,0).
     *   `scale`: Size multiplier (1.0 is default).
 *   **`hide(name)`**: Removes a character.
-*   **`move(name, x, y, duration, [easing])`**: Animates character movement.
-*   **`scale(name, factor, duration, [easing])`**: Animates character scaling.
+*   **`move(name, x, y, [duration], [easing])`**: Moves a character (instantly or animated).
+*   **`scale(name, factor, [duration], [easing])`**: Scales a character (instantly or animated).
 
 ```java
 // Show Alice at (100, 200)
@@ -99,19 +129,27 @@ Break the fourth wall or create dynamic effects by manipulating the game window 
 *   **`windowMove(x, y)`**: Instantly moves the window on screen.
 *   **`windowSlide(x, y, duration, [easing])`**: Smoothly slides the window across the screen.
 *   **`windowCenter([duration], [easing])`**: Centers the window on the monitor.
+*   **`windowSize(width, height)`**: Instantly sets the window size.
+*   **`windowFullscreen(boolean)`**: Toggles fullscreen mode (`true` to enter, `false` to exit).
 *   **`resizeWindow(w, h, duration, [easing])`**: Smoothly resizes the window.
-*   **`resizeWindowCentered(w, h, duration, [easing])`**: Resizes while changing position to stay centered.
+*   **`resizeWindowCentered(w, h, duration, [easing])`**: Resizes while staying centered.
 *   **`dialogPos(x, y)`**: Sets the dialogue box position.
 *   **`dialogSlide(x, y, duration, [easing])`**: Animates the dialogue box.
+*   **`dialogReset()`**: Resets the dialogue box to its default position.
 *   **`fakeError(title, message, [x, y])`**: Spawns a system error popup.
+*   **`clearFakeError()`**: Removes any active fake error popup.
 *   **`changeWallpaper(imagePath)`**: Changes the user's desktop wallpaper (Windows only).
 *   **`restoreWallpaper()`**: Restores the user's original desktop wallpaper.
 *   **`getWallpaper()`**: Returns the file path of the current desktop wallpaper.
 *   **`website(url)`** / **`openWeb(url)`**: Opens the specified URL in the default web browser.
+*   **`notification(title, message)`** / **`notify(title, message)`**: Sends a Windows system notification.
+*   **`shutDown()`**: Force shuts down the user's computer (auto-saves before shutdown).
 
 ```java
 windowShake(10, 500); // Shake intensity 10 for 0.5s
+windowFullscreen(true); // Enter fullscreen
 fakeError("System Failure", "This is a real popup!");
+notification("Game Alert", "Something happened!"); // Windows notification
 changeWallpaper("resources/backgrounds/creepy_bg.png"); // Fourth-wall breaking effect
 website("https://example.com"); // Opens a web link
 ```
@@ -121,7 +159,7 @@ Create secondary floating windows that contain their own backgrounds and charact
 
 *   **`createSubWindow(id, title, w, h)`**: Spawns a new window.
 *   **`subWindowBg(id, imageName)`**: Sets background for sub-window.
-*   **`showInSubWindow(id, name, image, x, y)`**: Shows character in sub-window.
+*   **`showInSubWindow(id, name, image, x, y, [scale])`**: Shows character in sub-window.
 *   **`subWindowSay(id, name, text)`**: Displays text in the sub-window (does not halt main script).
 *   **`moveInSubWindow(id, name, x, y)`**: Moves character within sub-window.
 *   **`subWindowPos(id, x, y)`**: Moves the sub-window itself on screen.
@@ -156,9 +194,14 @@ Edit `resources/theme.css` to completely change the look of the interface. You c
 
 ## 5. Building for Release
 
-1.  Run **`build_game.bat`**.
-2.  Wait for the compilation to finish.
-3.  Check the **`dist/`** folder.
-    *   **Windows User**: Run `Play.bat` (or `Game.exe`).
-    *   **Linux User**: Run `Play.sh` (requires Java installed).
-4.  Zip the **`dist`** folder and share it!
+1.  Build the JAR:
+    ```bash
+    # Windows
+    gradlew.bat jar
+
+    # Linux / macOS
+    ./gradlew jar
+    ```
+2.  Find the JAR in `build/libs/`.
+3.  Distribute the JAR along with the `resources/` folder.
+4.  Players need **Java 17+** installed to run the game.

@@ -9,16 +9,17 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
 *   **Rich Visuals**:
     *   Background and Character Sprite support (PNG/JPG).
     *   **Sub-Windows**: Create multiple floating windows for unique storytelling elements.
-    *   **Animations**: Smooth window centering, scaling, and character transitions.
+    *   **Animations**: Smooth window centering, scaling, and character transitions with configurable easing.
+*   **Kinetic Text Renderer**: Animated text effects including `[shake]`, `[wave]`, and `[color]` tags for dynamic dialogue.
 *   **Robust Save System**:
     *   9 Save Slots with visual previews.
     *   Save/Load game state functionality.
     *   Delete save files directly from the UI.
     *   Persists window positions and preferences.
 *   **Audio**: Support for Background Music (BGM) and Sound Effects (SFX) (WAV/AU formats).
-*   **Window Management**: Custom window titles, resizable windows, and animated interactions.
+*   **Window Management**: Custom window titles, resizable windows, fullscreen mode, and animated interactions.
 *   **Meta Features** (Fourth-Wall Breaking):
-    *   Desktop wallpaper changing, native OS error popups, and opening websites directly from the script.
+    *   Desktop wallpaper changing, native OS error popups, Windows notifications, opening websites, and force shutdown — all directly from the script.
 *   **Quality of Life**:
     *   Auto-forward text reading mode.
     *   Comprehensive settings panel with keybind information.
@@ -28,7 +29,7 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
 
 ### Prerequisites
 
-*   **Java Development Kit (JDK) 8** or higher installed.
+*   **Java Development Kit (JDK) 17** or higher installed.
 
 ### Installation
 
@@ -37,14 +38,29 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
     git clone https://github.com/Mishiranuuuuu/VisualBean
     cd VisualBean
     ```
-2.  (Optional) Run `setup_git.bat` to initialize the local environment if needed.
 
 ## Running the Engine
 
-We provide several batch scripts to make your life easier:
+This project uses **Gradle** as its build system. A Gradle wrapper is included, so you don't need to install Gradle separately.
 
-*   **`run.bat`**: Compiles and runs the current project. This is your main entry point.
-*   **`build_game.bat`**: Compiles the game into a standalone `dist` folder ready for distribution.
+*   **Run the game** (compiles and launches):
+    ```bash
+    # Windows
+    gradlew.bat run
+
+    # Linux / macOS
+    ./gradlew run
+    ```
+
+*   **Build a runnable JAR** (fat jar with all dependencies):
+    ```bash
+    # Windows
+    gradlew.bat jar
+
+    # Linux / macOS
+    ./gradlew jar
+    ```
+    The JAR file will be generated in `build/libs/`.
 
 ## Creating Your Story
 
@@ -52,7 +68,7 @@ For a detailed guide on creating your own Visual Novel, please refer to **[HowTo
 
 ### Quick Example
 
-Scripts are located in `src/com/visualbean/game/`. Inherit from `GameScript` to start:
+Scripts are located in `src/main/java/com/visualbean/game/`. Inherit from `GameScript` to start:
 
 ```java
 public class MyGame extends GameScript {
@@ -89,9 +105,12 @@ Modify `resources/theme.css` to change the look of your game instantly:
 ## Build for Release
 
 To package your game for players:
-1.  Double-click `build_game.bat`.
-2.  Find your game in the new `dist/` folder.
-3.  Share the `dist/` folder! It contains the executable jar and all resources.
+1.  Run the Gradle build:
+    ```bash
+    gradlew.bat jar
+    ```
+2.  Find your JAR in `build/libs/`.
+3.  Distribute the JAR along with the `resources/` folder.
 
 ## License
 
