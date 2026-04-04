@@ -19,7 +19,7 @@ A powerful, lightweight, and customizable engine for creating Visual Novels usin
 *   **Audio**: Support for Background Music (BGM) and Sound Effects (SFX) (WAV/AU formats).
 *   **Window Management**: Custom window titles, resizable windows, fullscreen mode, and animated interactions.
 *   **Meta Features** (Fourth-Wall Breaking):
-    *   Desktop wallpaper changing, native OS error popups, Windows notifications, opening websites, and force shutdown — all directly from the script.
+    *   Desktop wallpaper changing, native OS error popups, Windows notifications, opening websites, and force close window — all directly from the script.
 *   **Quality of Life**:
     *   Auto-forward text reading mode.
     *   Comprehensive settings panel with keybind information.

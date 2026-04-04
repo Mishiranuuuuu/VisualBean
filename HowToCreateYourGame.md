@@ -143,7 +143,7 @@ Break the fourth wall or create dynamic effects by manipulating the game window 
 *   **`getWallpaper()`**: Returns the file path of the current desktop wallpaper.
 *   **`website(url)`** / **`openWeb(url)`**: Opens the specified URL in the default web browser.
 *   **`notification(title, message)`** / **`notify(title, message)`**: Sends a Windows system notification.
-*   **`shutDown()`**: Force shuts down the user's computer (auto-saves before shutdown).
+*   **`forceCloseWindow()`**: Force closes the game window (auto-saves before closing, so the player can resume later).
 
 ```java
 windowShake(10, 500); // Shake intensity 10 for 0.5s

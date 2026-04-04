@@ -286,12 +286,8 @@ public abstract class GameScript implements Runnable {
         engine.showNotification(title, message);
     }
 
-    protected void shutDown() {
-        try {
-            engine.shutDown();
-        } catch (java.io.IOException e) {
-            System.err.println("Error shutting down: " + e.getMessage());
-        }
+    protected void forceCloseWindow() {
+        engine.forceCloseWindow();
     }
 
     @Override

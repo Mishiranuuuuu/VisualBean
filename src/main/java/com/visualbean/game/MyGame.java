@@ -12,6 +12,9 @@ public class MyGame extends GameScript {
     @Override
     public void run() {
 
+        fakeError("Wanring",
+                "This demo contain a feature that will directly interact with your computer and operating system.\nBut all the change can be easily revert.");
+
         windowTitle("VisualBean - Demo Showcase");
 
         playMusic("Beautiful Day");
@@ -215,24 +218,24 @@ public class MyGame extends GameScript {
         }
 
         show(SAKURA, "demo_girl_scared");
-        say(SAKURA, "And I have one last trick that quite dangerous...");
-        say(SAKURA, "That's force [shake]shutdown...[/shake]!");
+        say(SAKURA, "And I have one last trick that quite dramatic...");
+        say(SAKURA, "That's force [shake]close window...[/shake]!");
         show(SAKURA, "demo_girl_happy");
         say(SAKURA, "But don't worry!");
-        say(SAKURA, "The game will save your progress before shutting down.");
+        say(SAKURA, "The game will save your progress before closing.");
         show(SAKURA, "demo_girl_smile");
         say(SAKURA, "So you won't lose any progress!");
         say(SAKURA, "You can re-open the game and continue from where you left off by click load game.");
         say(SAKURA, "The game will immediately load on where you left off.");
-        say(SAKURA, "Do you want me to shutdown your computer?");
-        int shutdownChoice = menu("Yes, shutdown my computer!", "No way!");
+        say(SAKURA, "Do you want me to close the game?");
+        int shutdownChoice = menu("Yes, close the game!", "No way!");
         if (shutdownChoice == 0) {
             show(SAKURA, "demo_girl_scared");
             say(SAKURA, "Ready?");
             say(SAKURA, "3...");
             say(SAKURA, "2...");
             say(SAKURA, "1...");
-            shutDown();
+            forceCloseWindow();
             say(SAKURA, "");
             show(SAKURA, "demo_girl_neutral");
             say(SAKURA, "You should be here by now...");
@@ -241,7 +244,7 @@ public class MyGame extends GameScript {
             say(SAKURA, "How was that?");
             say(SAKURA, "I think it's pretty cool!");
         } else {
-            say(SAKURA, "That's fair! It is a pretty dangerous trick though.");
+            say(SAKURA, "That's fair! It is a pretty dramatic trick though.");
         }
     }
 

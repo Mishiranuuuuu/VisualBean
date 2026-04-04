@@ -4,7 +4,6 @@ import com.visualbean.ui.GameWindow;
 import com.visualbean.ui.SubWindow;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1059,25 +1058,17 @@ public class GameEngine {
         });
     }
 
-    @SuppressWarnings("deprecation")
-    public void shutDown() throws RuntimeException, IOException {
+    public void forceCloseWindow() {
         if (isSkipping())
             return;
 
-        // Save current game state to secret shutdown slot before shutting down
+        // Save current game state to secret shutdown slot before closing
         saveShutdownState();
 
-        String shutDownCommand;
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows")) {
-            shutDownCommand = "shutdown -s -t 0";
-        } else if (os.contains("mac") || os.contains("linux")) {
-            shutDownCommand = "sudo shutdown -h now";
-        } else {
-            throw new RuntimeException("Unsupported operating system");
-        }
-        Runtime runtime = Runtime.getRuntime();
-        runtime.exec(shutDownCommand);
+        // Force close the game window (not the user's PC)
+        SwingUtilities.invokeLater(() -> {
+            window.dispose();
+        });
         System.exit(0);
     }
 

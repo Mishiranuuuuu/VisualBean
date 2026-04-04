@@ -12,7 +12,7 @@ public class AudioManager {
 
     private String currentMusicName;
 
-    private float musicVolume = 0.8f;
+    private float musicVolume = 0.0f;
     private float sfxVolume = 1.0f;
 
     public boolean isPlaying(String name) {
