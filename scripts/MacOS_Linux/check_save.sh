@@ -15,7 +15,7 @@ if ! command -v javac &> /dev/null; then
     exit 1
 fi
 
-javac -d bin -sourcepath src src/com/visualbean/tools/SaveInspector.java src/com/visualbean/core/SaveData.java
+javac -d bin -sourcepath src src/main/java/com/visualbean/tools/SaveInspector.java src/main/java/com/visualbean/core/SaveData.java
 
 if [ $? -ne 0 ]; then
     echo ""

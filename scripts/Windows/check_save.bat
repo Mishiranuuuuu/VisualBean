@@ -9,7 +9,7 @@ echo.
 if not exist bin mkdir bin
 
 echo [1/2] Compiling Tools...
-javac -d bin -sourcepath src src/com/visualbean/tools/SaveInspector.java src/com/visualbean/core/SaveData.java
+javac -d bin -sourcepath src src/main/java/com/visualbean/tools/SaveInspector.java src/main/java/com/visualbean/core/SaveData.java
 if errorlevel 1 (
     echo.
     echo [ERROR] Compilation failed! 
